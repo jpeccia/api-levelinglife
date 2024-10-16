@@ -14,12 +14,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.jpeccia.levelinglife.entity.User;
 import com.jpeccia.levelinglife.repository.UserRepository;
+import com.jpeccia.levelinglife.infra.security.TokenService;
 
 import java.io.IOException;
 import java.util.Collections;
 
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
+
     @Autowired
     TokenService tokenService;
     @Autowired
