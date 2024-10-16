@@ -52,4 +52,19 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User loginUser(String usernameOrEmail, String password) throws Exception {
+        Optional<User> userOptional = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail);
+        if (!userOptional.isPresent()) {
+            throw new Exception("Usuário não encontrado");
+        }
+
+        User user = userOptional.get();
+
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new Exception("Senha incorreta");
+        }
+
+        return user; 
+    }
+
 }
