@@ -40,6 +40,6 @@ public class User {
     private String profilePicture;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<> quests = new ArrayList<>();
+    private List<Quest> quests = new ArrayList<>();
     
 }
