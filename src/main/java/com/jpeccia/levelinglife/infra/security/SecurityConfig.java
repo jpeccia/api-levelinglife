@@ -32,6 +32,17 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
+
+                        // Permitir apenas usuários autenticados para todos os outros endpoints
+                        .requestMatchers(HttpMethod.GET, "/users/{username}").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/users/{id}").authenticated()
+
+                        .requestMatchers(HttpMethod.GET, "/quests/user/{userId}").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/quests/add").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/quests/{id}/complete").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/quests/{id}").authenticated()
+
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
