@@ -1,6 +1,7 @@
 package com.jpeccia.levelinglife.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jpeccia.levelinglife.dto.QuestDTO;
+import com.jpeccia.levelinglife.dto.ResponseDTO;
 import com.jpeccia.levelinglife.entity.Quest;
+import com.jpeccia.levelinglife.entity.User;
 import com.jpeccia.levelinglife.service.QuestService;
 
 @RestController
@@ -31,10 +35,17 @@ public class QuestController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Quest> addQuest(@RequestBody Quest quest) {
-        Quest newQuest = questService.createQuest(quest);
+    public ResponseEntity<Quest> addQuest(@RequestBody QuestDTO body) {
+   
+            User newUser = new User();
+            newUser.setPassword(passwordEncoder.encode(body.getPassword()));
+            newUser.setEmail(body.getEmail());
+            newUser.setUsername(body.getUsername());
+            newUser.setName(body.getName());
+            this.repository.save(newUser);
 
-        return ResponseEntity.ok(newQuest);
+            String token = this.tokenService.generateToken(newUser);
+            return ResponseEntity.ok(new ResponseDTO(newUser.getUsername(), token));
     }
 
     @PutMapping("/{id}/complete")

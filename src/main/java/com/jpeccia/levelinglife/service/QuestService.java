@@ -18,9 +18,6 @@ public class QuestService {
         return questRepository.findByUserId(userId);
     }
 
-    public Quest createQuest(Quest quest){
-        return questRepository.save(quest);
-    }
 
     public void completeQuest(Long questId){
         Quest quest = questRepository.findById(questId)
