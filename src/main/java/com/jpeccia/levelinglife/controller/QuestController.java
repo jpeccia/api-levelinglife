@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jpeccia.levelinglife.dto.QuestDTO;
+import com.jpeccia.levelinglife.dto.QuestResponseDTO;
 import com.jpeccia.levelinglife.dto.ResponseDTO;
 import com.jpeccia.levelinglife.entity.Quest;
 import com.jpeccia.levelinglife.entity.User;
+import com.jpeccia.levelinglife.repository.QuestRepository;
 import com.jpeccia.levelinglife.service.QuestService;
 
 @RestController
@@ -26,6 +28,8 @@ public class QuestController {
     
     @Autowired
     private QuestService questService;
+
+    @Autowired QuestRepository repository;
 
     @GetMapping("/user/{userId}")
     public ResponseEntity <List<Quest>> getQuestsByUserId(@PathVariable Long userId){
@@ -37,15 +41,13 @@ public class QuestController {
     @PostMapping("/add")
     public ResponseEntity<Quest> addQuest(@RequestBody QuestDTO body) {
    
-            User newUser = new User();
-            newUser.setPassword(passwordEncoder.encode(body.getPassword()));
-            newUser.setEmail(body.getEmail());
-            newUser.setUsername(body.getUsername());
-            newUser.setName(body.getName());
-            this.repository.save(newUser);
+            Quest newQuest = new Quest();
+            newQuest.setTitle(body.getTitle());
+            newQuest.setDescription(body.getDescription());
+            newQuest.setType(body.getType());
+            this.repository.save(newQuest);
 
-            String token = this.tokenService.generateToken(newUser);
-            return ResponseEntity.ok(new ResponseDTO(newUser.getUsername(), token));
+            return ResponseEntity.ok(newQuest.getTitle(), newQuest.getDescription(), newQuest.getType(), newQuest.getXp());
     }
 
     @PutMapping("/{id}/complete")

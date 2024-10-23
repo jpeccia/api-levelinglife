@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class QuestDTO {
+public class QuestResponseDTO {
     
     public String title;
     public String description;
     public QuestType type;
-
+    public String xp;
 }
