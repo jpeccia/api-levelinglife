@@ -39,15 +39,27 @@ public class QuestController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Quest> addQuest(@RequestBody QuestDTO body) {
+    public ResponseEntity<String> addQuest(@RequestBody QuestDTO body) {
    
             Quest newQuest = new Quest();
             newQuest.setTitle(body.getTitle());
             newQuest.setDescription(body.getDescription());
             newQuest.setType(body.getType());
+
+            switch (newQuest.getType()) {
+                case DAILY:
+                    newQuest.setXp(100);
+                    break;
+                case WEEKLY:
+                    newQuest.setXp(500);      
+                case MONTHLY:
+                    newQuest.setXp(4500);
+                default:
+                    break;
+            }
             this.repository.save(newQuest);
 
-            return ResponseEntity.ok(newQuest.getTitle(), newQuest.getDescription(), newQuest.getType(), newQuest.getXp());
+            return ResponseEntity.ok().body("Created Quest!");
     }
 
     @PutMapping("/{id}/complete")
