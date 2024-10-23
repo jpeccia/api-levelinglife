@@ -32,9 +32,9 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody LoginRequestDTO body){
-        User user = this.repository.findByEmail(body.getEmail()).orElseThrow(() -> new RuntimeException("User not found!"));
+        User user = this.repository.findByUsername(body.getUsername()).orElseThrow(() -> new RuntimeException("User not found!"));
 
-        if(passwordEncoder.matches(user.getPassword(), body.getPassword())){
+        if(passwordEncoder.matches(body.getPassword(), user.getPassword())){
             String token = this.tokenService.generateToken(user);
             return ResponseEntity.ok(new ResponseDTO(user.getUsername(), token));
         }

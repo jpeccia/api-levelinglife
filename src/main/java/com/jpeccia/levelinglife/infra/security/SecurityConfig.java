@@ -22,43 +22,30 @@ public class SecurityConfig {
     private CustomUserDetailsService userDetailsService;
 
     @Autowired
-    private SecurityFilter securityFilter;
+    SecurityFilter securityFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())  // Desativa o CSRF para APIs REST
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))  // JWT será usado, então Stateless Session
-            .authorizeHttpRequests(authorize -> authorize
-                // Permitir acesso público aos endpoints de autenticação e registro
-                .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
-                
-                // Permitir apenas usuários autenticados para todos os outros endpoints
-                .requestMatchers(HttpMethod.GET, "/api/users/{username}").authenticated()
-                .requestMatchers(HttpMethod.PUT, "/api/users/{id}").authenticated()
-
-                .requestMatchers(HttpMethod.GET, "/api/quests/user/{userId}").authenticated()
-                .requestMatchers(HttpMethod.POST, "/api/quests/add").authenticated()
-                .requestMatchers(HttpMethod.PUT, "/api/quests/{id}/complete").authenticated()
-                .requestMatchers(HttpMethod.DELETE, "/api/quests/{id}").authenticated()
-
-                .anyRequest().authenticated()  // Qualquer outra requisição também requer autenticação
-            )
-            .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);  // Adiciona o filtro JWT antes do filtro padrão de autenticação por senha
-
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
-    // Bean para codificação de senha
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // Bean para gerenciar autenticação
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 }
+
