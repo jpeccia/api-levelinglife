@@ -41,6 +41,14 @@ public class User implements UserDetails{
     @Column(nullable = false)
     private String password;
     
+    public User(String username, String name, String email, String password, UserRole role){
+        this.username = username;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
     private UserRole role;
 
     public Collection<? extends GrantedAuthority> getAuthorities() {

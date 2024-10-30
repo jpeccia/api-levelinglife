@@ -1,11 +1,7 @@
 package com.jpeccia.levelinglife.dto;
 
-import lombok.Data;
+import com.jpeccia.levelinglife.entity.UserRole;
 
-@Data
-public class UserRegisterDTO {
-    private String username;
-    private String name;
-    private String email;
-    private String password;
+public record UserRegisterDTO (String username, String name, String email, String password, UserRole role) {
+
 }

@@ -9,7 +9,7 @@ import com.jpeccia.levelinglife.entity.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    UserDetails findByLogin(String login);
+    UserDetails findByLogin(String username);
     Optional<User> findByEmail(String email);
     Optional<User> findByUsername(String username);
     Optional<User> findByUsernameOrEmail(String username, String email);

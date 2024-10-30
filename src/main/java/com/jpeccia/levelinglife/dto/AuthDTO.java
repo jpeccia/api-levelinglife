@@ -1,5 +1,5 @@
 package com.jpeccia.levelinglife.dto;
 
-public record AuthDTO(String login, String password) {
+public record AuthDTO(String username, String password) {
     
 }
