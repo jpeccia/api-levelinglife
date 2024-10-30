@@ -26,7 +26,7 @@ public class TokenService {
 
             String token = JWT.create()
                            .withIssuer("levelinglife-auth")
-                           .withSubject(user.getEmail())
+                           .withSubject(user.getUsername())
                            .withExpiresAt(this.generateExpirationDate())
                            .sign(algorithm);
             return token;
