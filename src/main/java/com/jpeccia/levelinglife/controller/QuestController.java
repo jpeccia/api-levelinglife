@@ -30,30 +30,11 @@ public class QuestController {
     @GetMapping("/user/{userId}")
     public ResponseEntity <List<Quest>> getQuestsByUserId(@PathVariable Long userId){
         List<Quest> quests = questService.findAllQuestsByUserId(userId);
-
         return ResponseEntity.ok(quests);
     }
 
     @PostMapping("/add")
     public ResponseEntity<String> addQuest(@RequestBody QuestDTO body) {
-   
-            Quest newQuest = new Quest();
-            newQuest.setTitle(body.getTitle());
-            newQuest.setDescription(body.getDescription());
-            newQuest.setType(body.getType());
-
-            switch (newQuest.getType()) {
-                case DAILY:
-                    newQuest.setXp(100);
-                    break;
-                case WEEKLY:
-                    newQuest.setXp(500);      
-                case MONTHLY:
-                    newQuest.setXp(4500);
-                default:
-                    break;
-            }
-            this.repository.save(newQuest);
 
             return ResponseEntity.ok().body("Created Quest!");
     }
@@ -61,14 +42,12 @@ public class QuestController {
     @PutMapping("/{id}/complete")
     public ResponseEntity<Void> completeQuest(@PathVariable Long id){
         questService.completeQuest(id);
-
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteQuest(@PathVariable Long id){
         questService.deleteQuest(id);
-        
         return ResponseEntity.ok().build();
     }
 }
