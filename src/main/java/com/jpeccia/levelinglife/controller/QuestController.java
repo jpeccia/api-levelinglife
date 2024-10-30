@@ -1,7 +1,6 @@
 package com.jpeccia.levelinglife.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jpeccia.levelinglife.dto.QuestDTO;
-import com.jpeccia.levelinglife.dto.QuestResponseDTO;
-import com.jpeccia.levelinglife.dto.ResponseDTO;
 import com.jpeccia.levelinglife.entity.Quest;
-import com.jpeccia.levelinglife.entity.User;
 import com.jpeccia.levelinglife.repository.QuestRepository;
 import com.jpeccia.levelinglife.service.QuestService;
 
