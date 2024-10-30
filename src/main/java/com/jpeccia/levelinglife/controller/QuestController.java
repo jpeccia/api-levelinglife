@@ -27,24 +27,28 @@ public class QuestController {
 
     @Autowired QuestRepository repository;
 
+    // Listar quests por ID de usuário
     @GetMapping("/user/{userId}")
     public ResponseEntity <List<Quest>> getQuestsByUserId(@PathVariable Long userId){
         List<Quest> quests = questService.findAllQuestsByUserId(userId);
         return ResponseEntity.ok(quests);
     }
 
+    // Adicionar uma nova quest
     @PostMapping("/add")
     public ResponseEntity<Quest> addQuest(@RequestBody QuestDTO body) {
         Quest newQuest = questService.createQuest(body);
             return ResponseEntity.ok(newQuest);
     }
 
+    // Marcar uma quest como completa
     @PutMapping("/{id}/complete")
     public ResponseEntity<Void> completeQuest(@PathVariable Long id){
         questService.completeQuest(id);
         return ResponseEntity.ok().build();
     }
 
+    // Deletar uma quest por ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteQuest(@PathVariable Long id){
         questService.deleteQuest(id);
