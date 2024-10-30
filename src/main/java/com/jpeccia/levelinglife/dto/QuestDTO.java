@@ -14,6 +14,5 @@ public class QuestDTO {
     public String title;
     public String description;
     public QuestType type;
-    private Long userId; // Alterado para armazenar apenas o ID do usuário
 
 }

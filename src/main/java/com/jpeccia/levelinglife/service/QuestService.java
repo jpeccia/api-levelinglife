@@ -26,7 +26,9 @@ public class QuestService {
     }
 
      // Criar nova quest com definição automática de XP
-    public Quest createQuest(QuestDTO body) {
+    public Quest createQuest(QuestDTO body, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found!"));
+
         Quest newQuest = new Quest();
         newQuest.setTitle(body.getTitle());
         newQuest.setDescription(body.getDescription());
@@ -47,9 +49,9 @@ public class QuestService {
                 newQuest.setXp(0); // Define XP padrão para tipos desconhecidos
                 break;
         }
-        User user = userRepository.findById(body.getUserId())
-        .orElseThrow(() -> new RuntimeException("User not found!"));
-        newQuest.setUser(user);
+
+        newQuest.setUser(user); // Definindo o usuário na nova quest
+
         return questRepository.save(newQuest); // Salva e retorna a quest
     }
 
