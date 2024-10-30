@@ -3,6 +3,7 @@ package com.jpeccia.levelinglife.controller;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +21,7 @@ import com.jpeccia.levelinglife.repository.UserRepository;
 @RestController
 @RequestMapping("/auth")
 public class UserController {
-    
+
     @Autowired
     private UserRepository repository;
 
@@ -31,34 +32,37 @@ public class UserController {
     private TokenService tokenService;
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody LoginRequestDTO body){
-        User user = this.repository.findByUsername(body.getUsername()).orElseThrow(() -> new RuntimeException("User not found!"));
+    public ResponseEntity<?> login(@RequestBody LoginRequestDTO body) {
+        User user = repository.findByUsername(body.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found!"));
 
-        if(passwordEncoder.matches(body.getPassword(), user.getPassword())){
-            String token = this.tokenService.generateToken(user);
+        if (passwordEncoder.matches(body.getPassword(), user.getPassword())) {
+            String token = tokenService.generateToken(user);
             return ResponseEntity.ok(new ResponseDTO(user.getUsername(), token));
         }
-        return ResponseEntity.badRequest().build();
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
     }
 
     @PostMapping("/register")
-    public ResponseEntity register(@RequestBody UserRegisterDTO body){
-        Optional<User> user = this.repository.findByEmail(body.getEmail());
+    public ResponseEntity<?> register(@RequestBody UserRegisterDTO body) {
+        Optional<User> existingUser = repository.findByEmail(body.getEmail());
 
-        if(user.isEmpty()){
-            User newUser = new User();
-            newUser.setPassword(passwordEncoder.encode(body.getPassword()));
-            newUser.setEmail(body.getEmail());
-            newUser.setUsername(body.getUsername());
-            newUser.setName(body.getName());
-            this.repository.save(newUser);
-
-            String token = this.tokenService.generateToken(newUser);
-            return ResponseEntity.ok(new ResponseDTO(newUser.getUsername(), token));
-
+        if (existingUser.isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Email already registered");
         }
-        return ResponseEntity.badRequest().build();
+
+        // Criar o novo usuário
+        User newUser = new User();
+        newUser.setPassword(passwordEncoder.encode(body.getPassword()));
+        newUser.setEmail(body.getEmail());
+        newUser.setUsername(body.getUsername());
+        newUser.setName(body.getName());
+        
+        repository.save(newUser);
+
+        String token = tokenService.generateToken(newUser);
+        return ResponseEntity.ok(new ResponseDTO(newUser.getUsername(), token));
     }
-
-
 }
