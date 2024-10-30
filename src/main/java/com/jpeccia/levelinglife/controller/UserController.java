@@ -33,7 +33,7 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO body) {
-        User user = repository.findByUsername(body.getUsername())
+        User user = repository.findByEmail(body.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found!"));
 
         if (passwordEncoder.matches(body.getPassword(), user.getPassword())) {
