@@ -34,9 +34,9 @@ public class QuestController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<String> addQuest(@RequestBody QuestDTO body) {
-
-            return ResponseEntity.ok().body("Created Quest!");
+    public ResponseEntity<Quest> addQuest(@RequestBody QuestDTO body) {
+        Quest newQuest = questService.createQuest(body);
+            return ResponseEntity.ok(newQuest);
     }
 
     @PutMapping("/{id}/complete")
