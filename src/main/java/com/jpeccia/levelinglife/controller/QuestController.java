@@ -38,7 +38,7 @@ public class QuestController {
     @PostMapping("/add")
     public ResponseEntity<Quest> addQuest(@RequestBody QuestDTO body) {
         Quest newQuest = questService.createQuest(body);
-            return ResponseEntity.ok(newQuest);
+        return ResponseEntity.ok(newQuest);
     }
 
     // Marcar uma quest como completa
