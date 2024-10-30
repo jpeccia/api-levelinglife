@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ResponseDTO {
 
-    private String name;
     private String token;
     
 }

@@ -11,20 +11,22 @@ import org.springframework.security.core.userdetails.UserDetails;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "users")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class User implements UserDetails{
 
     @Id
@@ -51,8 +53,6 @@ public class User implements UserDetails{
         this.role = role;
     }
 
-
-    @Enumerated(EnumType.STRING)
     private UserRole role;
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
