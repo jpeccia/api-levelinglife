@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jpeccia.levelinglife.dto.QuestDTO;
 import com.jpeccia.levelinglife.entity.Quest;
 import com.jpeccia.levelinglife.repository.QuestRepository;
+import com.jpeccia.levelinglife.repository.UserRepository;
 import com.jpeccia.levelinglife.service.QuestService;
 
 @RestController
@@ -25,7 +26,11 @@ public class QuestController {
     @Autowired
     private QuestService questService;
 
-    @Autowired QuestRepository repository;
+    @Autowired 
+    QuestRepository repository;
+
+    @Autowired
+    UserRepository userRepository;
 
     // Listar quests por ID de usuário
     @GetMapping("/user/{userId}")

@@ -7,13 +7,18 @@ import org.springframework.stereotype.Service;
 
 import com.jpeccia.levelinglife.dto.QuestDTO;
 import com.jpeccia.levelinglife.entity.Quest;
+import com.jpeccia.levelinglife.entity.User;
 import com.jpeccia.levelinglife.repository.QuestRepository;
+import com.jpeccia.levelinglife.repository.UserRepository;
 
 @Service
 public class QuestService {
     
     @Autowired
     private QuestRepository questRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     // Listar quests por usuário
     public List<Quest> findAllQuestsByUserId(Long userId){
@@ -42,7 +47,9 @@ public class QuestService {
                 newQuest.setXp(0); // Define XP padrão para tipos desconhecidos
                 break;
         }
-
+        User user = userRepository.findById(body.getUserId())
+        .orElseThrow(() -> new RuntimeException("User not found!"));
+        newQuest.setUser(user);
         return questRepository.save(newQuest); // Salva e retorna a quest
     }
 
