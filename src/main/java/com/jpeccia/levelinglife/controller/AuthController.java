@@ -11,5 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody AuthDTO data)
+    public ResponseEntity login(@RequestBody AuthDTO data){
+        
+    }
 }
