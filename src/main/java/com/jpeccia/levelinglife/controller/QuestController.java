@@ -44,9 +44,8 @@ public class QuestController {
 
     // Listar quests por ID de usuário
     @GetMapping("/user/{userId}")
-    public ResponseEntity <List<Quest>> getQuestsByUserId(@PathVariable Long userId){
-        List<Quest> quests = questService.findAllQuestsByUserId(userId);
-        return ResponseEntity.ok(quests);
+    public List<Quest> getQuestsByUserId(@PathVariable Long userId){
+        return repository.findByUserId(userId);
     }
 
     // Adicionar uma nova quest

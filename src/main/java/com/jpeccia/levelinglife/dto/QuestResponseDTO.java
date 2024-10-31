@@ -14,5 +14,5 @@ public class QuestResponseDTO {
     public String title;
     public String description;
     public QuestType type;
-    public String xp;
+    public int xp;
 }
