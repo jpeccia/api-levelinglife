@@ -20,6 +20,12 @@ public class QuestService {
     @Autowired
     private UserRepository userRepository;
 
+
+    // Calcula o XP necessário para o próximo nível
+    public int calculateXpForNextLevel(int level) {
+        return level * 600; // Exemplo: cada nível requer 600 XP a mais
+    }
+
     // Listar quests por usuário
     public List<Quest> findAllQuestsByUserId(Long userId){
         return questRepository.findByUserId(userId);
