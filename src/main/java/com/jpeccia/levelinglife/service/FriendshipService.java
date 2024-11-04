@@ -19,7 +19,8 @@ public class FriendshipService {
 
     @Autowired
     private UserRepository userRepository;
-
+    
+    // Adiciona um amigo para o usuário atual
     public String addFriend(User user, Long friendId){
         User friend = userRepository.findById(friendId).orElseThrow(() -> new RuntimeException("Friend not found"));
 
