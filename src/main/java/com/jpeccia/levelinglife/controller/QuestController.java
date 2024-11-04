@@ -100,4 +100,14 @@ public class QuestController {
         questService.deleteQuest(id);
         return ResponseEntity.ok().build();
     }
+
+    // Endpoint para obter quests com suas datas de expiração para o calendário
+    @GetMapping("/calendar")
+    public ResponseEntity<List<Quest>> getCalendarQuests() {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        
+        List<Quest> quests = repository.findByUserId(user.getId());
+
+        return ResponseEntity.ok(quests);
+    }
 }
