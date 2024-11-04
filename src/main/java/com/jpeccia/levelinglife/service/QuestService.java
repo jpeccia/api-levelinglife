@@ -1,5 +1,6 @@
 package com.jpeccia.levelinglife.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,25 +63,27 @@ public class QuestService {
     }
 
     // Marcar quest como completa
-    public void completeQuest(Long questId) {
+     public void completeQuest(Long questId) {
         Quest quest = questRepository.findById(questId)
                 .orElseThrow(() -> new RuntimeException("Quest not found"));
-        if (!quest.isCompleted()) {
-            quest.setCompleted(true); // Marcar a quest como completa
+
+        // Define completedAt com a data e hora atuais
+        if (quest.getCompletedAt() == null) { // Verifica se já não foi concluída
+            quest.setCompletedAt(LocalDateTime.now());
 
             User user = quest.getUser(); // Obter o usuário associado
             int xpEarned = quest.getXp();
             user.setXp(user.getXp() + xpEarned); // Adicionar o XP ganho
 
-            // Verificar se o usuário atingiu o próximo nível
+            // Subir de nível, se necessário
             int xpForNextLevel = calculateXpForNextLevel(user.getLevel());
             if (user.getXp() >= xpForNextLevel) {
-                user.setLevel(user.getLevel() + 1); // Subir de nível
-                user.setXp(0); // Redefinir o XP para zero ao subir de nível
+                user.setLevel(user.getLevel() + 1);
+                user.setXp(0);
             }
 
-            userRepository.save(user); // Salvar o usuário com novo nível e XP zerado, se aplicável
-            questRepository.save(quest); // Salvar a quest como completa
+            userRepository.save(user); // Salva o usuário com novo XP e nível
+            questRepository.save(quest); // Salva a quest com data de conclusão
         }
     }
 
