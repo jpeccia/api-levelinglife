@@ -1,6 +1,7 @@
 package com.jpeccia.levelinglife.repository;
 
 import com.jpeccia.levelinglife.entity.Friendship;
+import com.jpeccia.levelinglife.entity.Friendship.FriendshipStatus;
 import com.jpeccia.levelinglife.entity.User;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,4 +16,6 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
 
     // Verifica se uma amizade já existe entre dois usuários
     Optional<Friendship> findByUserAndFriend(User user, User friend);
+
+    List<Friendship> findByUserAndStatus(User user, FriendshipStatus status);
 }

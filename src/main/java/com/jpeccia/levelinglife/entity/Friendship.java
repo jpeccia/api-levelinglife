@@ -7,6 +7,10 @@ import lombok.Data;
 @Data
 public class Friendship {
 
+    public enum FriendshipStatus {
+        PENDING, ACCEPTED, REJECTED
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,10 +23,16 @@ public class Friendship {
     @JoinColumn(name = "friend_id", nullable = false)
     private User friend;
 
-    public Friendship() {}
+    @Enumerated(EnumType.STRING)
+    private FriendshipStatus status;
+
+    public Friendship() {
+        this.status = FriendshipStatus.PENDING; // O status padrão é "PENDING" ao criar a amizade
+    }
 
     public Friendship(User user, User friend) {
         this.user = user;
         this.friend = friend;
+        this.status = FriendshipStatus.PENDING;
     }
 }
