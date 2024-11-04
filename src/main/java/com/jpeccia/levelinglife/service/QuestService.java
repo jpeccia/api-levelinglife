@@ -56,12 +56,16 @@ public class QuestService {
     }
 
     // Marcar quest como completa
-    public void completeQuest(Long questId){
+    public void completeQuest(Long questId) {
         Quest quest = questRepository.findById(questId)
-        .orElseThrow(() -> new IllegalArgumentException("Quest not exist!"));
-
-        quest.setCompleted(true);
-        questRepository.save(quest);
+                .orElseThrow(() -> new RuntimeException("Quest not found"));
+        if (!quest.isCompleted()) {
+            quest.setCompleted(true); // Marcar como completa
+            User user = quest.getUser(); // Obter o usuário da quest
+            user.setXp(user.getXp() + quest.getXp()); // Adicionar XP ao usuário
+            userRepository.save(user); // Salvar o usuário com novo XP
+            questRepository.save(quest); // Atualizar a quest como completa
+        }
     }
 
     // Deletar quest
