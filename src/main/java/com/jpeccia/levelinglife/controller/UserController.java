@@ -1,6 +1,9 @@
 package com.jpeccia.levelinglife.controller;
 
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jpeccia.levelinglife.dto.UserProfileDTO;
 import com.jpeccia.levelinglife.dto.UserProfileUpdateDTO;
+import com.jpeccia.levelinglife.dto.UserRankingDTO;
 import com.jpeccia.levelinglife.entity.User;
 import com.jpeccia.levelinglife.repository.UserRepository;
 
@@ -69,6 +73,18 @@ public class UserController {
 
         userRepository.save(user); // Salvar as atualizações do usuário
         return ResponseEntity.ok("Perfil atualizado com sucesso.");
+    }
+
+    @GetMapping("/ranking")
+    public ResponseEntity<List<UserRankingDTO>> getTopLevelUsers() {
+        List<User> topUsers = userRepository.findTop10ByOrderByLevelDesc();
+
+        // Converte a lista de User para UserRankingDTO, incluindo a foto de perfil
+        List<UserRankingDTO> ranking = topUsers.stream()
+                .map(user -> new UserRankingDTO(user.getName(), user.getLevel(), user.getProfilePicture()))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(ranking);
     }
 
 }
