@@ -20,17 +20,15 @@ import com.jpeccia.levelinglife.service.FriendshipService;
 @RestController
 @RequestMapping("/friends")
 public class FriendController {
+    
     @Autowired
     private FriendshipService friendshipService;
-
-    @Autowired
-    private UserRepository userRepository;
 
     // Endpoint para adicionar um amigo
     @PostMapping("/add/{friendId}")
     public ResponseEntity<String> addFriend(@PathVariable Long friendId) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String result = friendshipService.addFriend(user, friendId);
+        String result = friendshipService.sendFriendRequest(user.getId(), friendId);
         return ResponseEntity.ok(result);
     }
 
@@ -38,7 +36,7 @@ public class FriendController {
     @GetMapping("/")
     public ResponseEntity<List<UserProfileDTO>> getFriends() {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<User> friends = friendshipService.getFriends(user);
+        List<User> friends = friendshipService.listFriends(user.getId());
 
         // Converter para UserProfileDTO para limitar os dados
         List<UserProfileDTO> friendProfiles = friends.stream()
@@ -52,7 +50,7 @@ public class FriendController {
     @GetMapping("/friend-profile/{friendId}")
     public ResponseEntity<UserProfileDTO> getFriendProfile(@PathVariable Long friendId) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<User> friends = friendshipService.getFriends(user);
+        List<User> friends = friendshipService.listFriends(user.getId());
 
         // Verifica se o usuário consultado está na lista de amigos
         User friend = friends.stream()
