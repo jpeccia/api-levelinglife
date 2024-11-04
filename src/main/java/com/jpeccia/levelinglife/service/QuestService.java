@@ -23,7 +23,7 @@ public class QuestService {
 
     // Calcula o XP necessário para o próximo nível
     public int calculateXpForNextLevel(int level) {
-        return level * 600; // Exemplo: cada nível requer 600 XP a mais
+        return level * 800; // Exemplo: cada nível requer 800 XP a mais
     }
 
     // Listar quests por usuário
