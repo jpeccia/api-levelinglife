@@ -1,7 +1,5 @@
 package com.jpeccia.levelinglife.entity;
 
-import java.time.LocalDateTime;
-
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -14,22 +12,17 @@ public class Friendship {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "requester_id", nullable = false)
-    private User requester;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "friend_id", nullable = false)
     private User friend;
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
+    public Friendship() {}
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private FriendshipStatus status;
-
-    public Friendship() {
-        this.createdAt = LocalDateTime.now();
-        this.status = FriendshipStatus.PENDING;
+    public Friendship(User user, User friend) {
+        this.user = user;
+        this.friend = friend;
     }
 }
