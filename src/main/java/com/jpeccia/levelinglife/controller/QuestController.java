@@ -5,14 +5,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -43,13 +42,28 @@ public class QuestController {
     TokenService tokenService;
 
     // Listar quests por ID de usuário
-    @GetMapping("/user/{userId}")
-    public List<Quest> getQuestsByUserId(@PathVariable Long userId){
-        return repository.findByUserId(userId);
+    @GetMapping("/")
+    public ResponseEntity<List<Quest>> getUserQuests(@RequestHeader("Authorization") String authHeader) {
+        // Extrair o token JWT do cabeçalho e validá-lo
+        String token = authHeader.replace("Bearer ", "");
+        String username = tokenService.validateToken(token);
+        
+        if (username == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // Buscar o usuário no banco de dados
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(() -> new RuntimeException("User not found!"));
+
+
+        // Recuperar todas as quests associadas ao usuário
+        List<Quest> userQuests = repository.findByUserId(user.getId());
+        return ResponseEntity.ok(userQuests);
     }
 
     // Adicionar uma nova quest
-    @PostMapping("/add")
+    @PostMapping("/")
     public ResponseEntity<Quest> addQuest(@RequestBody QuestDTO body, HttpServletRequest request) {
         String token = request.getHeader("Authorization").replace("Bearer ", "");
         System.out.println("Received token for validation: " + token);
