@@ -17,8 +17,6 @@ import com.jpeccia.levelinglife.repository.UserRepository;
 @RequestMapping("/user")
 public class UserController {
 
-    
-
     @Autowired
     UserRepository userRepository;
 
@@ -27,6 +25,7 @@ public class UserController {
         return userRepository.findAll();
     }
 
+    //Endpoint pra ver o perfil do usuario
     @GetMapping("/profile")
     public ResponseEntity<UserProfileDTO> getProfile() {
         // Obter o usuário autenticado do contexto de segurança
