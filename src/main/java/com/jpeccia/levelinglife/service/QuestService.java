@@ -57,6 +57,23 @@ public class QuestService {
                 break;
         }
 
+    // Calcular e definir a data de expiração com base no tipo de quest
+    LocalDateTime now = LocalDateTime.now();
+    switch (newQuest.getType()) {
+        case DAILY:
+            newQuest.setExpiresAt(now.plusDays(1)); // Expira em 24 horas
+            break;
+        case WEEKLY:
+            newQuest.setExpiresAt(now.plusWeeks(1)); // Expira em 7 dias
+            break;
+        case MONTHLY:
+            newQuest.setExpiresAt(now.plusMonths(1)); // Expira em 1 mês
+            break;
+        default:
+            newQuest.setExpiresAt(null); // Não define expiração para tipos desconhecidos
+            break;
+    }
+
         newQuest.setUser(user); // Definindo o usuário na nova quest
 
         return questRepository.save(newQuest); // Salva e retorna a quest

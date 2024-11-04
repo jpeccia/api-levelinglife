@@ -43,7 +43,6 @@ public class Quest {
     private LocalDateTime expiresAt;
     private LocalDateTime completedAt; 
 
-
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "user_id", nullable = false)
@@ -51,21 +50,7 @@ public class Quest {
 
     public Quest() {
         this.createdAt = LocalDateTime.now();
-        this.expiresAt = calculateExpiryDate(); // Define a data de expiração ao criar a quest
+        // Remove o cálculo de expiresAt do construtor
     }
-
-    // Calcula a data de expiração com base na frequência da quest
-    public LocalDateTime calculateExpiryDate() {
-        switch (this.type) {
-            case DAILY:
-                return this.createdAt.plusDays(1); // Expira em 24 horas
-            case WEEKLY:
-                return this.createdAt.plusWeeks(1); // Expira em 7 dias
-            case MONTHLY:
-                return this.createdAt.plusMonths(1); // Expira em 1 mês
-            default:
-                return this.createdAt;
-        }
-
-}
+    
 }
