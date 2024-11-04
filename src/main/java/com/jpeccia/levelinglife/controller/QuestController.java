@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -58,8 +59,15 @@ public class QuestController {
 
 
         // Recuperar todas as quests associadas ao usuário
-        List<Quest> userQuests = repository.findByUserId(user.getId());
-        return ResponseEntity.ok(userQuests);
+        List<Quest> activeQuests = repository.findByUserIdAndCompletedAtIsNull(user.getId());
+        return ResponseEntity.ok(activeQuests);
+    }
+
+    @GetMapping("/completed")
+    public ResponseEntity<List<Quest>> getCompletedQuests() {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<Quest> completedQuests = repository.findByUserIdAndCompletedAtIsNotNull(user.getId());
+        return ResponseEntity.ok(completedQuests);
     }
 
     // Adicionar uma nova quest
