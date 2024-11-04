@@ -63,13 +63,6 @@ public class QuestController {
         return ResponseEntity.ok(activeQuests);
     }
 
-    @GetMapping("/completed")
-    public ResponseEntity<List<Quest>> getCompletedQuests() {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<Quest> completedQuests = repository.findByUserIdAndCompletedAtIsNotNull(user.getId());
-        return ResponseEntity.ok(completedQuests);
-    }
-
     // Adicionar uma nova quest
     @PostMapping("/")
     public ResponseEntity<Quest> addQuest(@RequestBody QuestDTO body, HttpServletRequest request) {

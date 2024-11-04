@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.jpeccia.levelinglife.dto.QuestDTO;
@@ -21,6 +22,13 @@ public class QuestService {
     @Autowired
     private UserRepository userRepository;
 
+    // Método que será chamado periodicamente
+    @Scheduled(fixedRate = 60000) // Executa a cada 60 segundos (60000 milissegundos)
+    public void removeExpiredQuests() {
+        LocalDateTime now = LocalDateTime.now();
+        // Busca e remove as quests expiradas
+        questRepository.deleteAllByExpiresAtBefore(now);
+    }
 
     // Calcula o XP necessário para o próximo nível
     public int calculateXpForNextLevel(int level) {
