@@ -66,11 +66,21 @@ public class QuestService {
         Quest quest = questRepository.findById(questId)
                 .orElseThrow(() -> new RuntimeException("Quest not found"));
         if (!quest.isCompleted()) {
-            quest.setCompleted(true); // Marcar como completa
-            User user = quest.getUser(); // Obter o usuário da quest
-            user.setXp(user.getXp() + quest.getXp()); // Adicionar XP ao usuário
-            userRepository.save(user); // Salvar o usuário com novo XP
-            questRepository.save(quest); // Atualizar a quest como completa
+            quest.setCompleted(true); // Marcar a quest como completa
+
+            User user = quest.getUser(); // Obter o usuário associado
+            int xpEarned = quest.getXp();
+            user.setXp(user.getXp() + xpEarned); // Adicionar o XP ganho
+
+            // Verificar se o usuário atingiu o próximo nível
+            int xpForNextLevel = calculateXpForNextLevel(user.getLevel());
+            if (user.getXp() >= xpForNextLevel) {
+                user.setLevel(user.getLevel() + 1); // Subir de nível
+                user.setXp(0); // Redefinir o XP para zero ao subir de nível
+            }
+
+            userRepository.save(user); // Salvar o usuário com novo nível e XP zerado, se aplicável
+            questRepository.save(quest); // Salvar a quest como completa
         }
     }
 
