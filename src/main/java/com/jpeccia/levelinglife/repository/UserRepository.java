@@ -1,5 +1,6 @@
 package com.jpeccia.levelinglife.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,6 +13,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findById(Long id);
     Optional<User> findByEmail(String email);
     User findByUsernameOrEmail(String username, String email);
-
+    // Método para obter os 10 usuários com maior nível
+    List<User> findTop10ByOrderByLevelDesc();
     
 }
