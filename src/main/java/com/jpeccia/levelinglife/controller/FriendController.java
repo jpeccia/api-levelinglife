@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jpeccia.levelinglife.dto.UserProfileDTO;
 import com.jpeccia.levelinglife.entity.FriendRequest;
 import com.jpeccia.levelinglife.entity.User;
-import com.jpeccia.levelinglife.repository.UserRepository;
 import com.jpeccia.levelinglife.service.FriendRequestService;
 
 @RestController
@@ -25,9 +24,6 @@ import com.jpeccia.levelinglife.service.FriendRequestService;
 public class FriendController {
     @Autowired
     private FriendRequestService friendRequestService;
-
-    @Autowired
-    private UserRepository userRepository;
 
     // Envia um pedido de amizade usando o username
     @PostMapping("/add/{username}")
