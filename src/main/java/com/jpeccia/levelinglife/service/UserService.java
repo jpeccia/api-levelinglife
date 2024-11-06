@@ -13,7 +13,7 @@ public class UserService {
     private UserRepository userRepository;
 
        // Método que atribui o título com base no nível
-       private String getTitleForLevel(int level) {
+       public String getTitleForLevel(int level) {
         if (level >= 1 && level <= 5) {
             return "Sedentário Supremo";
         } else if (level >= 6 && level <= 10) {

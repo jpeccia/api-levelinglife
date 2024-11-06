@@ -22,6 +22,9 @@ public class QuestService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private UserService userService;
+
     // Método que será chamado periodicamente
     @Scheduled(fixedRate = 60000) // Executa a cada 60 segundos (60000 milissegundos)
     public void removeExpiredQuests() {
@@ -106,6 +109,9 @@ public class QuestService {
             int xpForNextLevel = calculateXpForNextLevel(user.getLevel());
             user.setXp(user.getXp() - xpForNextLevel);  // Subtrai o XP necessário para subir de nível
             user.setLevel(user.getLevel() + 1);         // Incrementa o nível do usuário
+
+            // Atualiza o título do usuário com base no novo nível
+            user.setTitle(userService.getTitleForLevel(user.getLevel()));
         }
 
             userRepository.save(user); // Salva o usuário com novo XP e nível
