@@ -21,6 +21,12 @@ public class SecurityConfig {
     @Autowired
     SecurityFilter securityFilter;
 
+    private static final String[] SWAGGER_LIST = {
+        "/swagger-ui/**",
+        "v3/api-docs/**",
+        "/swagger-resources/**"
+    };
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -29,6 +35,7 @@ public class SecurityConfig {
                .authorizeHttpRequests(authorize -> authorize
                                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                                         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
+                                        .requestMatchers(SWAGGER_LIST).permitAll()
                                         .anyRequest().authenticated())
                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                .build();
