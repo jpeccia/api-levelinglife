@@ -101,12 +101,12 @@ public class QuestService {
             user.setXp(user.getXp() + xpEarned); // Adicionar o XP ganho
 
 
-            // Subir de nível, se necessário
+        // Lógica para subir de nível enquanto o usuário tiver XP suficiente
+        while (user.getXp() >= calculateXpForNextLevel(user.getLevel())) {
             int xpForNextLevel = calculateXpForNextLevel(user.getLevel());
-            if (user.getXp() >= xpForNextLevel) {
-                user.setLevel(user.getLevel() + 1);
-                user.setXp(0);
-            }
+            user.setXp(user.getXp() - xpForNextLevel);  // Subtrai o XP necessário para subir de nível
+            user.setLevel(user.getLevel() + 1);         // Incrementa o nível do usuário
+        }
 
             userRepository.save(user); // Salva o usuário com novo XP e nível
             questRepository.save(quest); // Salva a quest com data de conclusão
