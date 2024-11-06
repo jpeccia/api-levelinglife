@@ -19,6 +19,11 @@ import com.jpeccia.levelinglife.entity.FriendRequest;
 import com.jpeccia.levelinglife.entity.User;
 import com.jpeccia.levelinglife.service.FriendRequestService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 @RestController
 @RequestMapping("/friends")
 public class FriendController {
@@ -26,16 +31,29 @@ public class FriendController {
     private FriendRequestService friendRequestService;
 
     // Envia um pedido de amizade usando o username
+    @Operation(summary = "Envio de pedido de amizade", description = "Envia um pedido de amizade para outro usuário.")
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Pedido de amizade enviado com sucesso"),
+    @ApiResponse(responseCode = "400", description = "Erro ao enviar pedido de amizade")
+    })
     @PostMapping("/add/{username}")
-    public ResponseEntity<String> sendFriendRequest(@PathVariable String username) {
+    public ResponseEntity<String> sendFriendRequest(@Parameter(description = "Nome de usuário do amigo")@PathVariable String username) {
+        
         User sender = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String result = friendRequestService.sendFriendRequest(sender, username);
         return ResponseEntity.ok(result);
     }
 
     // Aceita ou recusa um pedido de amizade
+    @Operation(summary = "Responder a um pedido de amizade", description = "Aceita ou recusa um pedido de amizade de outro usuário.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Pedido de amizade respondido com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Pedido de amizade não encontrado"),
+            @ApiResponse(responseCode = "403", description = "Você não tem permissão para responder a este pedido")
+    })
     @PostMapping("/respond/{requestId}")
-    public ResponseEntity<String> respondToFriendRequest(@PathVariable Long requestId, @RequestParam boolean accept) {
+    public ResponseEntity<String> respondToFriendRequest(@Parameter(description = "ID do pedido de amizade")@PathVariable Long requestId, 
+    @Parameter(description = "Aceitar ou recusar o pedido de amizade")@RequestParam boolean accept) {
         // Obter o usuário autenticado
         User receiver = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -45,6 +63,8 @@ public class FriendController {
     }
 
     // Lista os pedidos de amizade pendentes
+    @Operation(summary = "Listar pedidos de amizade pendentes", description = "Lista todos os pedidos de amizade que aguardam resposta.")
+    @ApiResponse(responseCode = "200", description = "Pedidos de amizade pendentes encontrados")
     @GetMapping("/pending-friend-requests")
     public ResponseEntity<List<FriendRequest>> getPendingFriendRequests() {
         User receiver = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -53,6 +73,8 @@ public class FriendController {
     }
 
     // Lista amigos (usuários com pedidos aceitos)
+    @Operation(summary = "Listar amigos", description = "Lista todos os amigos (usuários com pedidos de amizade aceitos).")
+    @ApiResponse(responseCode = "200", description = "Lista de amigos encontrada")
     @GetMapping("/")
     public ResponseEntity<List<UserProfileDTO>> getFriends() {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -73,6 +95,12 @@ public class FriendController {
         return ResponseEntity.ok(friends);
     }
 
+    // Remove um amigo
+    @Operation(summary = "Remover um amigo", description = "Remove um amigo, cancelando a amizade com base no nome de usuário.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Amigo removido com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Amigo não encontrado")
+    })
     @DeleteMapping("/remove/{friendUsername}")
     public ResponseEntity<String> removeFriend(@PathVariable String friendUsername) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
