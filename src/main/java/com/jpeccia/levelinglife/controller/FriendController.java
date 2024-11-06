@@ -39,7 +39,10 @@ public class FriendController {
     // Aceita ou recusa um pedido de amizade
     @PostMapping("/respond/{requestId}")
     public ResponseEntity<String> respondToFriendRequest(@PathVariable Long requestId, @RequestParam boolean accept) {
+        // Obter o usuário autenticado
         User receiver = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // Passar o usuário autenticado como destinatário ao serviço
         String result = friendRequestService.respondToFriendRequest(receiver, requestId, accept);
         return ResponseEntity.ok(result);
     }
@@ -56,16 +59,20 @@ public class FriendController {
     @GetMapping("/")
     public ResponseEntity<List<UserProfileDTO>> getFriends() {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<FriendRequest> acceptedRequests = friendRequestService.getPendingFriendRequests(user);
-
+    
+        // Busca todas as solicitações de amizade (ou pode buscar apenas as aceitas)
+        List<FriendRequest> acceptedRequests = friendRequestService.getAcceptedFriendRequests(user);
+    
+        // Filtra os amigos com status ACCEPTED
         List<UserProfileDTO> friends = acceptedRequests.stream()
                 .filter(request -> request.getStatus() == FriendRequest.Status.ACCEPTED)
                 .map(request -> {
+                    // Verifica qual usuário é o amigo, pois pode ser o sender ou receiver
                     User friend = request.getSender().equals(user) ? request.getReceiver() : request.getSender();
                     return new UserProfileDTO(friend.getName(), friend.getLevel(), friend.getXp(), friend.getProfilePicture());
                 })
                 .collect(Collectors.toList());
-
+    
         return ResponseEntity.ok(friends);
     }
 }

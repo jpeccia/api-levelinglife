@@ -5,6 +5,7 @@ import com.jpeccia.levelinglife.entity.User;
 import com.jpeccia.levelinglife.repository.FriendRequestRepository;
 import com.jpeccia.levelinglife.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,25 +34,37 @@ public class FriendRequestService {
     }
 
     public String respondToFriendRequest(User receiver, Long requestId, boolean accept) {
-        FriendRequest friendRequest = friendRequestRepository.findById(requestId)
-                .orElseThrow(() -> new RuntimeException("Pedido de amizade não encontrado"));
+    FriendRequest friendRequest = friendRequestRepository.findById(requestId)
+            .orElseThrow(() -> new RuntimeException("Pedido de amizade não encontrado"));
 
-        if (!friendRequest.getReceiver().equals(receiver)) {
-            return "Você não tem permissão para responder a este pedido.";
-        }
+    // Obtém o usuário autenticado
+    User authenticatedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        friendRequest.setStatus(accept ? FriendRequest.Status.ACCEPTED : FriendRequest.Status.DECLINED);
-        friendRequestRepository.save(friendRequest);
+    // Verifica se o usuário autenticado é o destinatário do pedido comparando os usernames
+    if (!friendRequest.getReceiver().getUsername().equals(authenticatedUser.getUsername())) {
+        return "Você não tem permissão para responder a este pedido.";
+    }
 
-        if (accept) {
-            // Cria amizade bidirecional
-            friendRequestRepository.save(new FriendRequest(friendRequest.getReceiver(), friendRequest.getSender()));
-        }
+    // Atualiza o status do pedido de amizade
+    friendRequest.setStatus(accept ? FriendRequest.Status.ACCEPTED : FriendRequest.Status.DECLINED);
+    friendRequestRepository.save(friendRequest);
 
-        return accept ? "Pedido de amizade aceito." : "Pedido de amizade recusado.";
+    // Caso o pedido seja aceito, adiciona amizade bidirecional
+    if (accept) {
+        FriendRequest reciprocalRequest = new FriendRequest(friendRequest.getReceiver(), friendRequest.getSender());
+        reciprocalRequest.setStatus(FriendRequest.Status.ACCEPTED);
+        friendRequestRepository.save(reciprocalRequest);
+    }
+
+    return accept ? "Pedido de amizade aceito." : "Pedido de amizade recusado.";
     }
 
     public List<FriendRequest> getPendingFriendRequests(User receiver) {
         return friendRequestRepository.findByReceiverAndStatus(receiver, FriendRequest.Status.PENDING);
+    }
+
+    public List<FriendRequest> getAcceptedFriendRequests(User user) {
+        // Busca as solicitações de amizade onde o status é ACCEPTED
+        return friendRequestRepository.findByReceiverAndStatus(user, FriendRequest.Status.ACCEPTED);
     }
 }

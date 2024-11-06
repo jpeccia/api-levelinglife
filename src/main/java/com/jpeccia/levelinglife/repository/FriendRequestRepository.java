@@ -13,7 +13,4 @@ public interface FriendRequestRepository extends JpaRepository<FriendRequest, Lo
 
     Optional<FriendRequest> findBySenderAndReceiver(User sender, User receiver);
 
-    // Busca um usuário pelo username
-    Optional<User> findByUsername(String username);
-
 }
