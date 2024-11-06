@@ -100,6 +100,7 @@ public class QuestService {
             int xpEarned = quest.getXp();
             user.setXp(user.getXp() + xpEarned); // Adicionar o XP ganho
 
+
             // Subir de nível, se necessário
             int xpForNextLevel = calculateXpForNextLevel(user.getLevel());
             if (user.getXp() >= xpForNextLevel) {
