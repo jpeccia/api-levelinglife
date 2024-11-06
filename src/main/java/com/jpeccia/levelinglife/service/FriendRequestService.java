@@ -59,6 +59,26 @@ public class FriendRequestService {
     return accept ? "Pedido de amizade aceito." : "Pedido de amizade recusado.";
     }
 
+    public String removeFriend(User user, String friendUsername) {
+        // Encontra o amigo pela ID
+        User friend = userRepository.findByUsername(friendUsername)
+                .orElseThrow(() -> new RuntimeException("Amigo não encontrado"));
+    
+        // Verifica se a amizade existe (entre user e friend)
+        FriendRequest friendship1 = friendRequestRepository.findBySenderAndReceiver(user, friend)
+                .orElseThrow(() -> new RuntimeException("Amizade não encontrada"));
+    
+        // Encontra a amizade bidirecional
+        FriendRequest friendship2 = friendRequestRepository.findBySenderAndReceiver(friend, user)
+                .orElseThrow(() -> new RuntimeException("Amizade não encontrada"));
+    
+        // Remove as amizades do banco de dados
+        friendRequestRepository.delete(friendship1);
+        friendRequestRepository.delete(friendship2);
+    
+        return "Amizade removida com sucesso.";
+    }
+
     public List<FriendRequest> getPendingFriendRequests(User receiver) {
         return friendRequestRepository.findByReceiverAndStatus(receiver, FriendRequest.Status.PENDING);
     }
