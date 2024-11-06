@@ -6,81 +6,66 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jpeccia.levelinglife.dto.UserProfileDTO;
+import com.jpeccia.levelinglife.entity.FriendRequest;
 import com.jpeccia.levelinglife.entity.User;
-import com.jpeccia.levelinglife.service.FriendshipService;
+import com.jpeccia.levelinglife.repository.UserRepository;
+import com.jpeccia.levelinglife.service.FriendRequestService;
 
 @RestController
 @RequestMapping("/friends")
 public class FriendController {
     @Autowired
-    private FriendshipService friendshipService;
+    private FriendRequestService friendRequestService;
 
-    // Endpoint para enviar um pedido de amizade
-    @PostMapping("/request/{friendId}")
-    public ResponseEntity<String> sendFriendRequest(@PathVariable Long friendId) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String result = friendshipService.sendFriendRequest(user, friendId);
+    @Autowired
+    private UserRepository userRepository;
+
+    // Envia um pedido de amizade usando o username
+    @PostMapping("/add/{username}")
+    public ResponseEntity<String> sendFriendRequest(@PathVariable String username) {
+        User sender = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String result = friendRequestService.sendFriendRequest(sender, username);
         return ResponseEntity.ok(result);
     }
 
-    // Endpoint para aceitar um pedido de amizade
-    @PostMapping("/accept/{friendshipId}")
-    public ResponseEntity<String> acceptFriendRequest(@PathVariable Long friendshipId) {
-        String result = friendshipService.acceptFriendRequest(friendshipId);
+    // Aceita ou recusa um pedido de amizade
+    @PostMapping("/respond/{requestId}")
+    public ResponseEntity<String> respondToFriendRequest(@PathVariable Long requestId, @RequestParam boolean accept) {
+        User receiver = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String result = friendRequestService.respondToFriendRequest(receiver, requestId, accept);
         return ResponseEntity.ok(result);
     }
 
-    // Endpoint para rejeitar um pedido de amizade
-    @PostMapping("/reject/{friendshipId}")
-    public ResponseEntity<String> rejectFriendRequest(@PathVariable Long friendshipId) {
-        String result = friendshipService.rejectFriendRequest(friendshipId);
-        return ResponseEntity.ok(result);
+    // Lista os pedidos de amizade pendentes
+    @GetMapping("/pending-friend-requests")
+    public ResponseEntity<List<FriendRequest>> getPendingFriendRequests() {
+        User receiver = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<FriendRequest> requests = friendRequestService.getPendingFriendRequests(receiver);
+        return ResponseEntity.ok(requests);
     }
 
-    // Endpoint para remover um amigo
-    @DeleteMapping("/remove/{friendId}")
-    public ResponseEntity<String> removeFriend(@PathVariable Long friendId) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String result = friendshipService.removeFriend(user, friendId);
-        return ResponseEntity.ok(result);
-    }
-
-    // Endpoint para listar os amigos do usuário autenticado
+    // Lista amigos (usuários com pedidos aceitos)
     @GetMapping("/")
     public ResponseEntity<List<UserProfileDTO>> getFriends() {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<User> friends = friendshipService.getFriends(user);
+        List<FriendRequest> acceptedRequests = friendRequestService.getPendingFriendRequests(user);
 
-        // Converter para UserProfileDTO para limitar os dados
-        List<UserProfileDTO> friendProfiles = friends.stream()
-                .map(friend -> new UserProfileDTO(friend.getName(), friend.getLevel(), friend.getXp(), friend.getProfilePicture()))
+        List<UserProfileDTO> friends = acceptedRequests.stream()
+                .filter(request -> request.getStatus() == FriendRequest.Status.ACCEPTED)
+                .map(request -> {
+                    User friend = request.getSender().equals(user) ? request.getReceiver() : request.getSender();
+                    return new UserProfileDTO(friend.getName(), friend.getLevel(), friend.getXp(), friend.getProfilePicture());
+                })
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(friendProfiles);
-    }
-
-    // Endpoint para visualizar o perfil de um amigo
-    @GetMapping("/friend-profile/{friendId}")
-    public ResponseEntity<UserProfileDTO> getFriendProfile(@PathVariable Long friendId) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<User> friends = friendshipService.getFriends(user);
-
-        // Verifica se o usuário consultado está na lista de amigos
-        User friend = friends.stream()
-                .filter(f -> f.getId().equals(friendId))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Esse usuário não é seu amigo."));
-
-        // Retorna o perfil do amigo
-        UserProfileDTO profile = new UserProfileDTO(friend.getName(), friend.getLevel(), friend.getXp(), friend.getProfilePicture());
-        return ResponseEntity.ok(profile);
+        return ResponseEntity.ok(friends);
     }
 }
