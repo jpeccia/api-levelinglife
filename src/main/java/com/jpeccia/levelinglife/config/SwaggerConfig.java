@@ -19,6 +19,6 @@ public class SwaggerConfig {
     }
 
     private SecurityScheme creaSecurityScheme(){
-        return new SecurityScheme().name("jwt_auth").type(SecurityScheme.Type.HTTP).scheme("Bearer ").bearerFormat("JWT");
+        return new SecurityScheme().name("jwt_auth").type(SecurityScheme.Type.HTTP).scheme("Bearer").bearerFormat("JWT");
     }
 }

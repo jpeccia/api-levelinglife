@@ -24,6 +24,9 @@ import com.jpeccia.levelinglife.repository.QuestRepository;
 import com.jpeccia.levelinglife.repository.UserRepository;
 import com.jpeccia.levelinglife.service.QuestService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
@@ -43,6 +46,11 @@ public class QuestController {
     TokenService tokenService;
 
     // Listar quests por ID de usuário
+    @Operation(summary = "Listar quests ativas do usuário", description = "Retorna todas as quests ativas de um usuário autenticado.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Quests retornadas com sucesso."),
+            @ApiResponse(responseCode = "401", description = "Token inválido ou usuário não autenticado.")
+    })
     @GetMapping("/")
     public ResponseEntity<List<Quest>> getUserQuests(@RequestHeader("Authorization") String authHeader) {
         // Extrair o token JWT do cabeçalho e validá-lo
@@ -64,6 +72,12 @@ public class QuestController {
     }
 
     // Adicionar uma nova quest
+    @Operation(summary = "Adicionar uma nova quest", description = "Adiciona uma nova quest para o usuário autenticado.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Quest adicionada com sucesso."),
+            @ApiResponse(responseCode = "401", description = "Token inválido ou usuário não autenticado."),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos para criação da quest.")
+    })
     @PostMapping("/")
     public ResponseEntity<Quest> addQuest(@RequestBody QuestDTO body, HttpServletRequest request) {
         String token = request.getHeader("Authorization").replace("Bearer ", "");
@@ -81,6 +95,11 @@ public class QuestController {
     }
 
     // Marcar uma quest como completa
+    @Operation(summary = "Marcar uma quest como completa", description = "Marca uma quest como completada.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Quest marcada como completada."),
+            @ApiResponse(responseCode = "404", description = "Quest não encontrada.")
+    })
     @PutMapping("/{id}/complete")
     public ResponseEntity<Void> completeQuest(@PathVariable Long id){
         questService.completeQuest(id);
@@ -88,6 +107,11 @@ public class QuestController {
     }
 
     // Deletar uma quest por ID
+    @Operation(summary = "Deletar uma quest", description = "Deleta uma quest existente.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Quest deletada com sucesso."),
+            @ApiResponse(responseCode = "404", description = "Quest não encontrada.")
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteQuest(@PathVariable Long id){
         questService.deleteQuest(id);
@@ -95,6 +119,11 @@ public class QuestController {
     }
 
     // Endpoint para obter quests com suas datas de expiração para o calendário
+    @Operation(summary = "Obter quests para o calendário", description = "Retorna as quests de um usuário, com foco nas datas de expiração para o calendário.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Quests retornadas com sucesso."),
+            @ApiResponse(responseCode = "401", description = "Usuário não autenticado.")
+    })
     @GetMapping("/calendar")
     public ResponseEntity<List<Quest>> getCalendarQuests() {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
