@@ -88,7 +88,7 @@ public class FriendController {
                 .map(request -> {
                     // Verifica qual usuário é o amigo, pois pode ser o sender ou receiver
                     User friend = request.getSender().equals(user) ? request.getReceiver() : request.getSender();
-                    return new UserProfileDTO(friend.getName(), friend.getLevel(), friend.getXp(), friend.getProfilePicture());
+                    return new UserProfileDTO(friend.getName(), friend.getTitle(), friend.getLevel(), friend.getXp(), friend.getProfilePicture());
                 })
                 .collect(Collectors.toList());
     

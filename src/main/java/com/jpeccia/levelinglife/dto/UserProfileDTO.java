@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserProfileDTO {
     private String name;
+    private String title;
     private int level;
     private int xp;
     private String profilePicture;
