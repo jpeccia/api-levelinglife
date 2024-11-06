@@ -40,6 +40,9 @@ public class User {
 
     @Column(nullable = false)
     private String password;
+
+    @Column(name = "title")
+    private String title;
     
     private int xp = 0;
 
@@ -49,5 +52,6 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Quest> quests = new ArrayList<>();
+    
     
 }

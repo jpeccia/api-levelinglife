@@ -12,6 +12,38 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+       // Método que atribui o título com base no nível
+       private String getTitleForLevel(int level) {
+        if (level >= 1 && level <= 5) {
+            return "Sedentário Supremo";
+        } else if (level >= 6 && level <= 10) {
+            return "Ninja das Metas Ignoradas";
+        } else if (level >= 11 && level <= 20) {
+            return "PhD em Cochilos";
+        } else if (level >= 21 && level <= 30) {
+            return "Herói da Ação Zero";
+        } else if (level >= 31 && level <= 40) {
+            return "Lorde da Autossabotagem";
+        } else if (level >= 41 && level <= 50) {
+            return "Mestre da Falta de Motivação";
+        } else if (level >= 51 && level <= 70) {
+            return "Lorde dos Feitos Não Feitos";
+        } else if (level >= 70 && level <= 75) {
+            return "Herói do Prazo Apertado";
+        } else if (level >= 76 && level <= 80) {
+            return "Campeão da Luta Contra o Prazo";
+        } else if (level >= 81 && level <= 85) {
+            return "Príncipe do Café com Leite";
+        } else if (level >= 86 && level <= 90) {
+            return "Rei do Sucesso Tardio";
+        } else if (level >= 91 && level <= 95) {
+            return "Titan das Conquistas";
+        } else if (level >= 96 && level <= 100) {
+            return "Monarca da Meta Realizada";
+        }
+        return "Sem Título"; // Caso não tenha título para o nível
+    }
+
     public User updateUser(User user){
         return userRepository.save(user);
     }
