@@ -21,6 +21,11 @@ import com.jpeccia.levelinglife.dto.UserRankingDTO;
 import com.jpeccia.levelinglife.entity.User;
 import com.jpeccia.levelinglife.repository.UserRepository;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -32,6 +37,11 @@ public class UserController {
     UserRepository userRepository;
 
     //Endpoint pra ver o perfil do usuario
+    @Operation(summary = "Visualiza o perfil do usuário", description = "Retorna as informações do perfil do usuário autenticado.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Perfil do usuário retornado com sucesso."),
+            @ApiResponse(responseCode = "401", description = "Usuário não autenticado.")
+    })
     @GetMapping("/")
     public ResponseEntity<UserProfileDTO> getProfile() {
         // Obter o usuário autenticado do contexto de segurança
@@ -48,8 +58,14 @@ public class UserController {
         return ResponseEntity.ok(profile);
     }
 
+    @Operation(summary = "Atualiza o perfil do usuário", description = "Permite que o usuário atualize seu nome, foto de perfil, email ou senha.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Perfil atualizado com sucesso."),
+            @ApiResponse(responseCode = "400", description = "Campos inválidos ou faltando."),
+            @ApiResponse(responseCode = "403", description = "Senha atual incorreta.")
+    })
     @PostMapping("/update")
-    public ResponseEntity<String> updateProfile(@RequestBody UserProfileUpdateDTO body) {
+    public ResponseEntity<String> updateProfile(@RequestBody @Parameter(description = "Dados para atualização do perfil do usuário.") UserProfileUpdateDTO body) {
         // Obter o usuário autenticado do contexto de segurança
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -75,6 +91,11 @@ public class UserController {
         return ResponseEntity.ok("Perfil atualizado com sucesso.");
     }
 
+    @Operation(summary = "Ranking de usuários", description = "Retorna os 10 usuários com maior nível.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Ranking de usuários retornado com sucesso."),
+            @ApiResponse(responseCode = "400", description = "Falha ao obter o ranking.")
+    })
     @GetMapping("/ranking")
     public ResponseEntity<List<UserRankingDTO>> getTopLevelUsers() {
         List<User> topUsers = userRepository.findTop10ByOrderByLevelDesc();
