@@ -4,8 +4,8 @@
   <a href="#functions">Funcionalidades</a> •
  <a href="#tech">Tecnologias Utilizadas</a> • 
  <a href="#started">Configuração e Execução</a> • 
- <a href="#colab">Collaborators</a> •
- <a href="#contribute">Contribute</a>
+ <a href="#colab">Colaboradores</a> •
+ <a href="#contribute">Contribua</a>
 </p>
 
 <p align="center">
@@ -48,8 +48,8 @@
 
 2. **Clonando o repositório**:
    ```bash
-   git clone https://github.com/seu-usuario/leveling-life.git
-   cd leveling-life
+   git clone https://github.com/seu-usuario/api-levelinglife.git
+   cd levelinglife
    ```
 
 3. **Configuração do Banco de Dados**:
