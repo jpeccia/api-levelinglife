@@ -15,7 +15,7 @@
 <h2 id="functions">🚀 Funcionalidades</h2>
 
 - **Autenticação e Registro** 🔒: Segurança com autenticação JWT para proteger o acesso de usuários.
-- **Sistema de Quests** 🎯: Os usuários podem criar e gerenciar quests e acompanhar seu progresso.
+- **Sistema de Quests** 🎯: Os usuários podem criar e gerenciar quests, acompanhando seu progresso.
 - **Níveis e XP** 🆙: Acumule XP e suba de nível com base nas quests concluídas.
 - **Sistema de Amizade** 👥: Envie e aceite pedidos de amizade para acompanhar o progresso dos amigos.
 - **Perfis Personalizados** 🖼️: Cada usuário tem um perfil com nome, foto e título.
