@@ -51,8 +51,65 @@
    cd levelinglife
    ```
 
-3. **Configuração do Banco de Dados**:
-   - Configure o PostgreSQL em seu ambiente e ajuste as configurações no arquivo `application.properties`.
+## 3. Configuração de Variáveis de Ambiente
+
+Este projeto utiliza variáveis de ambiente para gerenciar dados sensíveis, como credenciais de banco de dados, tokens de autenticação e chaves de API. Usar variáveis de ambiente ajuda a manter o código mais seguro e facilita a configuração em diferentes ambientes (desenvolvimento, teste, produção).
+
+### 1. Criar o arquivo `.env`
+
+1. Na raiz do projeto, crie um arquivo chamado `.env`.
+2. Adicione as variáveis de ambiente necessárias para o projeto, conforme o exemplo abaixo:
+
+```plaintext
+# Configurações de Banco de Dados
+DB_USERNAME=seuUsuario
+DB_PASSWORD=suaSenha
+DB_URL=jdbc:postgresql://localhost:5432/levelinglife
+
+# JWT Token para autenticação
+JWT_SECRET=suaChaveSecreta
+
+# Outras configurações importantes
+APP_PORT=8080
+```
+
+> **Nota:** Este arquivo não deve ser commitado no repositório, pois contém informações sensíveis. Garanta que o `.env` está listado no seu arquivo `.gitignore`.
+
+### 2. Carregar as Variáveis de Ambiente
+
+O Spring Boot carregará automaticamente as variáveis do sistema ou do ambiente. Se você estiver usando o arquivo `.env` com ferramentas como Docker ou outros sistemas de integração, ele será lido automaticamente se configurado no `docker-compose` ou no ambiente do servidor.
+
+### 3. Exemplo de Configuração no `application.properties`
+
+No arquivo `application.properties`, você pode acessar as variáveis usando a sintaxe `${NOME_VARIAVEL}`:
+
+```properties
+# Configuração do Banco de Dados
+spring.datasource.url=${DB_URL}
+spring.datasource.username=${DB_USERNAME}
+spring.datasource.password=${DB_PASSWORD}
+
+# Configuração do JWT
+jwt.secret=${JWT_SECRET}
+
+# Porta da aplicação
+server.port=${APP_PORT}
+```
+
+### 4. Usar Variáveis de Ambiente no Docker
+
+Se você estiver usando Docker, defina as variáveis de ambiente no `docker-compose.yml`:
+
+```yaml
+services:
+  app:
+    image: levelinglife-app
+    environment:
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - APP_PORT=${APP_PORT}
+```
 
 4. **Rodando a aplicação com Docker**:
    - Execute o comando abaixo para iniciar a aplicação em um container Docker:
