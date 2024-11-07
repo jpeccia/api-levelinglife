@@ -4,7 +4,6 @@
   <a href="#functions">Funcionalidades</a> •
  <a href="#tech">Tecnologias Utilizadas</a> • 
  <a href="#started">Configuração e Execução</a> • 
- <a href="#colab">Colaboradores</a> •
  <a href="#contribute">Contribua</a>
 </p>
 
@@ -70,21 +69,6 @@ A aplicação conta com testes para validação das principais funcionalidades:
 - **Cobertura** 📊: Relatórios de cobertura para garantir a qualidade do código.
 
 ---
----
-
-
-<h2 id="colab">🤝 Colaboradores</h2>
-
-<table>
-  <tr>
-    <td align="center">
-      <a href="#">
-        <img src="https://avatars.githubusercontent.com/u/116593320?s=400&u=42784e3ac6826d1aa31b5fd7dc7293ddc9ef25bf&v=4" width="100px;" alt="João Peccia Profile Picture"/><br>
-        <sub>
-          <b>João Peccia</b>
-        </sub>
-      </a>
-    </td>
 
 <h2 id="contribute">📫 Contribua</h2>
 
