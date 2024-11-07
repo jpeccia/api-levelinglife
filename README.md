@@ -2,13 +2,13 @@
 
 <p align="center">
   <a href="#functions">Funcionalidades</a> •
- <a href="#tech">Tecnologias Utilizadas</a> • 
+ <a href="#technologies">Tecnologias Utilizadas</a> • 
  <a href="#started">Configuração e Execução</a> • 
  <a href="#contribute">Contribua</a>
 </p>
 
 <p align="center">
-    <b>Leveling Life é uma aplicação desenvolvida para gamificar o desenvolvimento pessoal, proporcionando aos usuários um sistema de **quests**, **níveis** e **interação social** com amigos. Inspirada em RPGs e conceitos de gamificação, a aplicação visa tornar o dia a dia mais motivador e divertido.
+    <b>Leveling Life é uma aplicação desenvolvida para gamificar o desenvolvimento pessoal, proporcionando aos usuários um sistema de quests, níveis e interação social com amigos. Inspirada em RPGs e conceitos de gamificação, a aplicação visa tornar o dia a dia mais motivador e divertido.
 </b>
 </p>
 
