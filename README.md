@@ -12,7 +12,7 @@
 </b>
 </p>
 
-<h2 id="functions">📍 Funcionalidades</h2>
+<h2 id="functions">🚀 Funcionalidades</h2>
 
 - **Autenticação e Registro** 🔒: Segurança com autenticação JWT para proteger o acesso de usuários.
 - **Sistema de Quests** 🎯: Os usuários podem criar e gerenciar quests e acompanhar seu progresso.
