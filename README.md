@@ -70,7 +70,7 @@ A aplicação conta com testes para validação das principais funcionalidades:
 
 ---
 
-<h2 id="contribute">📫 Contribua</h2>
+<h2 id="contribute"></h2>
 
 ## Contribuição 🤝
 
