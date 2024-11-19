@@ -21,7 +21,7 @@ public class CorsConfig implements WebMvcConfigurer {
         } else {
             // Caso a variável de ambiente não esteja definida, podemos permitir qualquer origem ou configurar um valor padrão
             registry.addMapping("/**")
-                    .allowedOrigins("http://localhost:3000") // Valor padrão
+                    .allowedOrigins("http://localhost:5173") // Valor padrão
                     .allowedMethods("GET", "POST", "PUT", "DELETE")
                     .allowedHeaders("*")
                     .allowCredentials(true);
