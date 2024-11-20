@@ -50,7 +50,9 @@ public class UserController {
         // Construir o UserProfileDTO com as informações do usuário
         UserProfileDTO profile = new UserProfileDTO(
             user.getName(),
+            user.getUsername(),
             user.getTitle(),
+            user.getEmail(),
             user.getLevel(),
             user.getXp(),
             user.getProfilePicture()
