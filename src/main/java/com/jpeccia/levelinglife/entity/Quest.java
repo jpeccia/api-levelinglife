@@ -1,5 +1,6 @@
 package com.jpeccia.levelinglife.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -39,6 +40,7 @@ public class Quest {
     @Enumerated(EnumType.STRING)
     private QuestType type;
 
+    private LocalDate dueDate;
     private LocalDateTime createdAt;
     private LocalDateTime expiresAt;
     private LocalDateTime completedAt; 

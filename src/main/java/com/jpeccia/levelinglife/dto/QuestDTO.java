@@ -1,5 +1,7 @@
 package com.jpeccia.levelinglife.dto;
 
+import java.time.LocalDate;
+
 import com.jpeccia.levelinglife.entity.QuestType;
 
 import lombok.AllArgsConstructor;
@@ -15,5 +17,6 @@ public class QuestDTO {
     public String description;
     public QuestType type;
     public int xp;
+    private LocalDate dueDate;
 
 }

@@ -1,7 +1,7 @@
 package com.jpeccia.levelinglife.controller;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.jpeccia.levelinglife.dto.QuestDTO;
 import com.jpeccia.levelinglife.dto.UserProfileDTO;
@@ -82,17 +83,32 @@ public class QuestController {
         })
         @PostMapping("/")
         public ResponseEntity<Quest> addQuest(@RequestBody QuestDTO body, HttpServletRequest request) {
-            String token = request.getHeader("Authorization").replace("Bearer ", "");
-            System.out.println("Received token for validation: " + token);
-        
+            String token = request.getHeader("Authorization");
+            
+            if (token == null || !token.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            }
+            
+            token = token.replace("Bearer ", "");
             String username = tokenService.validateToken(token);
+            
             if (username == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
             }
-            User user = userRepository.findByEmail(username)
-                .orElseThrow(() -> new RuntimeException("User not found!"));
 
-            Quest newQuest = questService.createQuest(body, user.getId());
+            User user = userRepository.findByEmail(username)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+            // Converte a data de vencimento (dueDate) que veio do front-end (LocalDate)
+            LocalDate dueDate = body.getDueDate();  // Aqui a data é recebida como LocalDate
+            
+            // Caso queira garantir que a data está correta, você pode adicionar uma validação:
+            if (dueDate == null) {
+                return ResponseEntity.badRequest().body(null); // ou uma mensagem de erro apropriada
+            }
+
+            // Cria a nova quest com o dueDate e outros dados
+            Quest newQuest = questService.createQuest(body, user.getId(), dueDate);
             return ResponseEntity.ok(newQuest);
         }
 

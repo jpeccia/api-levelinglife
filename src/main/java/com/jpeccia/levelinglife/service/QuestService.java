@@ -1,5 +1,6 @@
 package com.jpeccia.levelinglife.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -43,15 +44,15 @@ public class QuestService {
         return questRepository.findByUserId(userId);
     }
 
-     // Criar nova quest com definição automática de XP
-    public Quest createQuest(QuestDTO body, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found!"));
-
+    public Quest createQuest(QuestDTO body, Long userId, LocalDate dueDate) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found!"));
+    
         Quest newQuest = new Quest();
         newQuest.setTitle(body.getTitle());
         newQuest.setDescription(body.getDescription());
         newQuest.setType(body.getType());
-
+    
         // Definir XP com base no tipo de quest
         switch (newQuest.getType()) {
             case DAILY:
@@ -67,27 +68,34 @@ public class QuestService {
                 newQuest.setXp(0); // Define XP padrão para tipos desconhecidos
                 break;
         }
-
-    // Calcular e definir a data de expiração com base no tipo de quest
-    LocalDateTime now = LocalDateTime.now();
-    switch (newQuest.getType()) {
-        case DAILY:
-            newQuest.setExpiresAt(now.plusDays(1)); // Expira em 24 horas
-            break;
-        case WEEKLY:
-            newQuest.setExpiresAt(now.plusWeeks(1)); // Expira em 7 dias
-            break;
-        case MONTHLY:
-            newQuest.setExpiresAt(now.plusMonths(1)); // Expira em 1 mês
-            break;
-        default:
-            newQuest.setExpiresAt(null); // Não define expiração para tipos desconhecidos
-            break;
-    }
-
+    
+        // Calcular e definir a data de expiração com base no tipo de quest
+        LocalDateTime now = LocalDateTime.now();
+        switch (newQuest.getType()) {
+            case DAILY:
+                newQuest.setExpiresAt(now.plusDays(1)); // Expira em 24 horas
+                break;
+            case WEEKLY:
+                newQuest.setExpiresAt(now.plusWeeks(1)); // Expira em 7 dias
+                break;
+            case MONTHLY:
+                newQuest.setExpiresAt(now.plusMonths(1)); // Expira em 1 mês
+                break;
+            default:
+                newQuest.setExpiresAt(null); // Não define expiração para tipos desconhecidos
+                break;
+        }
+    
+        // Adicionando a data de vencimento (dueDate) recebida do front-end
+        // A data de vencimento é passada pelo front-end como parte do corpo da requisição
+        if (body.getDueDate() != null) {
+            newQuest.setDueDate(body.getDueDate()); // Define a data de vencimento para a quest
+        }
+    
         newQuest.setUser(user); // Definindo o usuário na nova quest
-
-        return questRepository.save(newQuest); // Salva e retorna a quest
+    
+        // Salva e retorna a quest
+        return questRepository.save(newQuest);
     }
 
     // Marcar quest como completa
