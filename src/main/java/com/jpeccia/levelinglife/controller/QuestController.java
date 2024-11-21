@@ -1,6 +1,7 @@
 package com.jpeccia.levelinglife.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jpeccia.levelinglife.dto.QuestDTO;
+import com.jpeccia.levelinglife.dto.UserProfileDTO;
 import com.jpeccia.levelinglife.entity.Quest;
 import com.jpeccia.levelinglife.entity.User;
 import com.jpeccia.levelinglife.infra.security.TokenService;
@@ -44,6 +46,11 @@ public class QuestController {
 
     @Autowired
     TokenService tokenService;
+
+
+    private String getCurrentUsername() {
+        return SecurityContextHolder.getContext().getAuthentication().getName();
+    }
 
     // Listar quests por ID de usuário
         @Operation(summary = "Listar quests ativas do usuário", description = "Retorna todas as quests ativas de um usuário autenticado.")
@@ -144,9 +151,27 @@ public class QuestController {
                 @ApiResponse(responseCode = "404", description = "Quest não encontrada.")
         })
         @PutMapping("/{id}/complete")
-        public ResponseEntity<Void> completeQuest(@PathVariable Long id){
+        public ResponseEntity<UserProfileDTO> completeQuest(@PathVariable Long id) {
             questService.completeQuest(id);
-            return ResponseEntity.ok().build();
+
+            // Busca o usuário atualizado
+            User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+        
+            // Retorna os dados do usuário atualizado
+            UserProfileDTO userProfileDTO = new UserProfileDTO(
+                user.getName(),
+                user.getUsername(),
+                user.getTitle(),
+                user.getEmail(),
+                user.getLevel(),
+                user.getXp(),
+                user.getProfilePicture()
+            );
+        
+            return ResponseEntity.ok(userProfileDTO);
         }
 
     // Deletar uma quest por ID
