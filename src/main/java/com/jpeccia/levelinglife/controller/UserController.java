@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jpeccia.levelinglife.dto.PasswordValidationDTO;
 import com.jpeccia.levelinglife.dto.UserProfileDTO;
 import com.jpeccia.levelinglife.dto.UserProfileUpdateDTO;
 import com.jpeccia.levelinglife.dto.UserRankingDTO;
@@ -72,9 +73,13 @@ public class UserController {
         // Obter o usuário autenticado do contexto de segurança
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        // Atualizar nome e foto de perfil diretamente
+        // Atualizar nome
         if (body.getName() != null) user.setName(body.getName());
-        if (body.getProfilePicture() != null) user.setProfilePicture(body.getProfilePicture());
+
+            // Atualiza a URL da foto de perfil se fornecido
+        if (body.getProfilePicture() != null && !body.getProfilePicture().isEmpty()) {
+            user.setProfilePicture(body.getProfilePicture());
+        }
 
         // Validação de senha atual para atualização de email e senha
         if ((body.getNewEmail() != null || body.getNewPassword() != null) && body.getCurrentPassword() != null) {
@@ -110,5 +115,16 @@ public class UserController {
 
         return ResponseEntity.ok(ranking);
     }
+
+    @PostMapping("/check-password")
+    public ResponseEntity<String> checkPassword(@RequestBody @Parameter(description = "Senha atual para validação.") PasswordValidationDTO body) {
+    User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    
+    if (!passwordEncoder.matches(body.currentPassword(), user.getPassword())) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Senha atual incorreta.");
+    }
+    
+    return ResponseEntity.ok("Senha válida.");
+}
 
 }

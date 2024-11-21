@@ -11,5 +11,5 @@ public class UserRankingDTO {
     private String username;
     private int level;
     private int xp;
-    private byte[] profilePicture;
+    private String profilePicture;
 }

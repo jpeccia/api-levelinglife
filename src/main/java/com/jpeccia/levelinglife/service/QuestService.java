@@ -58,7 +58,7 @@ public class QuestService {
                 newQuest.setXp(100);
                 break;
             case WEEKLY:
-                newQuest.setXp(500);
+                newQuest.setXp(1000);
                 break;
             case MONTHLY:
                 newQuest.setXp(4500);

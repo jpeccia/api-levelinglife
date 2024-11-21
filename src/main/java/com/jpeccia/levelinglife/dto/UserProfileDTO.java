@@ -11,5 +11,5 @@ public class UserProfileDTO {
     private String email;
     private int level;
     private int xp;
-    private byte[] profilePicture;
+    private String profilePicture;
 }

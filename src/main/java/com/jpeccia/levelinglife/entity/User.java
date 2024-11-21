@@ -10,7 +10,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -49,8 +48,7 @@ public class User {
 
     private int level = 1;
 
-    @Lob // LOB indica que esse campo pode armazenar grandes quantidades de dados
-    private byte[] profilePicture; // Armazenando a foto como byte[]
+    private String profilePicture;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Quest> quests = new ArrayList<>();

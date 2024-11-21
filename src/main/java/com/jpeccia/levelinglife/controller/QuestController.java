@@ -47,11 +47,6 @@ public class QuestController {
     @Autowired
     TokenService tokenService;
 
-
-    private String getCurrentUsername() {
-        return SecurityContextHolder.getContext().getAuthentication().getName();
-    }
-
     // Listar quests por ID de usuário
         @Operation(summary = "Listar quests ativas do usuário", description = "Retorna todas as quests ativas de um usuário autenticado.")
         @ApiResponses({
@@ -137,6 +132,8 @@ public class QuestController {
             quest.setTitle(questDTO.getTitle());
             quest.setDescription(questDTO.getDescription());
             quest.setType(questDTO.getType());
+            quest.setXp(questDTO.getXp()); // Atualizando o XP
+
 
             // Salvar as alterações
             repository.save(quest);
