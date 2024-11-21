@@ -49,7 +49,8 @@ public class User {
 
     private int level = 1;
 
-    private String profilePicture;
+    @Lob // LOB indica que esse campo pode armazenar grandes quantidades de dados
+    private byte[] profilePicture; // Armazenando a foto como byte[]
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Quest> quests = new ArrayList<>();

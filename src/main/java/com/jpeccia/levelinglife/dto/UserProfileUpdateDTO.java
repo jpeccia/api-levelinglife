@@ -8,5 +8,5 @@ public class UserProfileUpdateDTO {
     private String currentPassword; // Senha atual para autenticação
     private String newPassword;     // Nova senha opcional
     private String newEmail;        // Novo email opcional
-    private String profilePicture;
+    private byte[] profilePicture;
 }

@@ -8,6 +8,8 @@ import lombok.Data;
 public class UserRankingDTO {
     private String name;
     private String title;
+    private String username;
     private int level;
-    private String profilePicture;
+    private int xp;
+    private byte[] profilePicture;
 }

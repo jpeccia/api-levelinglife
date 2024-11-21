@@ -70,28 +70,4 @@ public class UserService {
         user.setName(newName);
         return userRepository.save(user);
     }
-
-    private String saveProfilePicture(MultipartFile file) throws IOException {
-        // Defina o diretório onde as imagens serão armazenadas
-        String uploadDir = "path/to/upload/folder"; // Exemplo: "C:/user-profile-pictures/"
-        
-        // Crie um nome único para o arquivo (para evitar sobreposição de arquivos)
-        String fileName = System.currentTimeMillis() + "-" + file.getOriginalFilename();
-        Path uploadPath = Paths.get(uploadDir);
-
-        // Se o diretório não existir, cria-o
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
-        }
-
-        // Salve o arquivo no diretório
-        try (InputStream inputStream = file.getInputStream()) {
-            Path filePath = uploadPath.resolve(fileName);
-            Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
-        }
-
-        // Retorne o caminho da imagem (pode ser um caminho relativo ou completo)
-        return fileName; // Se necessário, use a URL completa, como "http://localhost:8080/images/filename"
-}
-
 }

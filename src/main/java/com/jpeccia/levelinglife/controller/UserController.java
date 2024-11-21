@@ -105,7 +105,7 @@ public class UserController {
 
         // Converte a lista de User para UserRankingDTO, incluindo a foto de perfil
         List<UserRankingDTO> ranking = topUsers.stream()
-                .map(user -> new UserRankingDTO(user.getName(), user.getTitle(), user.getLevel(), user.getProfilePicture()))
+                .map(user -> new UserRankingDTO(user.getName(), user.getUsername(), user.getTitle(), user.getLevel(), user.getXp(), user.getProfilePicture()))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(ranking);
