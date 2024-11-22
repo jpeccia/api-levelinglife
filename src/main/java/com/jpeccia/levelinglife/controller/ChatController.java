@@ -19,19 +19,28 @@ public class ChatController {
         this.chatMessageRepository = chatMessageRepository;
     }
 
-    // Envio de mensagens (WebSocket)
-    @MessageMapping("/send-message") // Rota que recebe mensagens
-    @SendToUser("/queue/reply") // Envia diretamente para o usuário destinatário
+    // Envio de mensagens via WebSocket
+    @MessageMapping("/send-message") // Rota para envio
+    @SendToUser("/queue/reply")      // Resposta direta ao destinatário
     public ChatMessage sendMessage(ChatMessage message) {
+        // Adiciona timestamp
         message.setTimestamp(LocalDateTime.now());
-        chatMessageRepository.save(message); // Salva no banco de dados
-        return message; // Retorna a mensagem ao destinatário
+
+        // Validação: Não permitir mensagens vazias
+        if (message.getContent() == null || message.getContent().trim().isEmpty()) {
+            throw new IllegalArgumentException("Mensagem não pode ser vazia!");
+        }
+
+        // Salva no banco de dados
+        chatMessageRepository.save(message);
+
+        return message; // Retorna a mensagem
     }
 
-    // Recuperação de histórico (REST)
+    // Recuperação de histórico entre dois usuários
     @GetMapping("/history/{user1}/{user2}")
     public List<ChatMessage> getChatHistory(@PathVariable String user1, @PathVariable String user2) {
-        // Busca mensagens enviadas por user1 para user2 e vice-versa
-        return chatMessageRepository.findBySenderAndRecipient(user1, user2);
+        // Busca mensagens de ambos os lados
+        return chatMessageRepository.findBySenderAndRecipientOrSenderAndRecipient(user1, user2, user2, user1);
     }
 }
