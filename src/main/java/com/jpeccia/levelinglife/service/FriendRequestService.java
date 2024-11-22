@@ -23,6 +23,11 @@ public class FriendRequestService {
         User receiver = userRepository.findByUsername(receiverUsername)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+            // Verifica se o usuário está tentando enviar um pedido de amizade para si mesmo
+        if (sender.getUsername().equals(receiverUsername)) {
+            return "Você não pode enviar um pedido de amizade para si mesmo.";
+        }
+
         // Verifica se o pedido de amizade já existe
         if (friendRequestRepository.findBySenderAndReceiver(sender, receiver).isPresent()) {
             return "Pedido de amizade já enviado ou já são amigos.";

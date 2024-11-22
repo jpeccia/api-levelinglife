@@ -57,7 +57,7 @@ class QuestServiceTest {
         when(questRepository.save(any(Quest.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // Chama o método que está sendo testado
-        Quest createdQuest = questService.createQuest(questDTO, user.getId());
+        Quest createdQuest = questService.createQuest(questDTO, user.getId(), questDTO.getDueDate());
 
         // Verificações
         assertEquals(questDTO.getTitle(), createdQuest.getTitle());
