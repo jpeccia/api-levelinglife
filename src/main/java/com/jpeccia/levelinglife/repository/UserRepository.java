@@ -15,7 +15,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     User findByUsernameOrEmail(String username, String email);
     // Método para obter os 10 usuários com maior nível
     List<User> findTop10ByOrderByLevelDesc();
-    User findByUsernameAndNote(String username);
 
-    
 }
