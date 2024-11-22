@@ -13,13 +13,13 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class ChatMessage {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String sender; // Quem enviou
-    private String recipient; // Para quem (ou canal, se for público)
+    private String sender; // Username de quem enviou
+    private String recipient; // Username de quem recebe
     private String content; // Conteúdo da mensagem
-    private LocalDateTime timestamp; // Data e hora da mensagem
+    private LocalDateTime timestamp; // Data e hora
 }

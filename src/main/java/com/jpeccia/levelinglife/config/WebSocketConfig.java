@@ -12,14 +12,15 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/topic"); // Canal para envio de mensagens
+        registry.enableSimpleBroker("/queue"); // Canal exclusivo para cada usuário
         registry.setApplicationDestinationPrefixes("/app"); // Prefixo para mensagens enviadas
     }
-
+    
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/chat") // Endpoint WebSocket
                 .setAllowedOrigins("*")
-                .withSockJS(); // Fallback para navegadores sem suporte WebSocket
+                .withSockJS();
     }
+    
 }
