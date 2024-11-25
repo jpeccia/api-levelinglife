@@ -1,4 +1,13 @@
 package com.jpeccia.levelinglife.dto;
 
-public record NoteRequestDTO( String title, String content) {
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class NoteRequestDTO {
+    private String title;
+    private String content;
 } 

@@ -1,130 +1,115 @@
 package com.jpeccia.levelinglife.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
-
+import com.jpeccia.levelinglife.dto.NoteRequestDTO;
+import com.jpeccia.levelinglife.dto.NoteResponseDTO;
 import com.jpeccia.levelinglife.entity.Note;
-import com.jpeccia.levelinglife.entity.User;
 import com.jpeccia.levelinglife.repository.NoteRepository;
-import com.jpeccia.levelinglife.repository.UserRepository;
-
-import java.util.Date;
-import java.util.List;
+import com.jpeccia.levelinglife.service.NoteService;
+import com.jpeccia.levelinglife.service.NoteService.PermissionDeniedException;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.transaction.annotation.Transactional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/notes")
-@Tag(name = "Notes", description = "Gerenciamento de notas dos usuários")
 public class NotesController {
+
+    @Autowired
+    private NoteService noteService;
 
     @Autowired
     private NoteRepository noteRepository;
 
-    @Autowired
-    private UserRepository userRepository;
 
-    /**
-     * Obter todas as notas do usuário logado.
-     *
-     * @param authentication Dados do usuário autenticado.
-     * @return Lista de notas do usuário.
-     */
+
+    @Operation(summary = "Obter todas as notas do usuário", description = "Retorna todas as notas associadas ao usuário autenticado")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Notas recuperadas com sucesso")
+    })
     @GetMapping
-    @Operation(summary = "Obter notas", description = "Retorna todas as notas associadas ao usuário logado.")
-    public List<Note> getNotes(Authentication authentication) {
-        String username = authentication.getName(); // Obtém o nome do usuário logado
-        User user = userRepository.findByUsername(username)
-                                   .orElseThrow(() -> new RuntimeException("User not found"));
-        return noteRepository.findByUser(user);
-    }
+    public ResponseEntity<List<NoteResponseDTO>> getNotes() throws Exception {
+        // Recupera as notas do serviço já convertidas para o DTO
+        List<NoteResponseDTO> response = noteService.getNotes();
 
-    /**
-     * Criar uma nova nota associada ao usuário logado.
-     *
-     * @param note Nova nota a ser criada.
-     * @param authentication Dados do usuário autenticado.
-     * @return A nota criada.
-     */
+        // Retorna a resposta com o status OK
+        return ResponseEntity.ok(response);
+    }
+    @Operation(summary = "Criar uma nova nota", description = "Cria uma nova nota associada ao usuário autenticado")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Nota criada com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Dados inválidos para criação da nota")
+    })
+    @Transactional
     @PostMapping
-    @Operation(summary = "Criar nota", description = "Cria uma nova nota para o usuário logado.")
-    public Note createNote(@RequestBody Note note, Authentication authentication) {
-        String username = authentication.getName(); // Obtém o nome de usuário do login
-        User user = userRepository.findByUsername(username)
-                                   .orElseThrow(() -> new RuntimeException("User not found"));
-        note.setUser(user);
-        note.setUpdatedAt(new Date());
-        return noteRepository.save(note);
+    public ResponseEntity<Note> createNote(@RequestBody NoteRequestDTO noteDto) {
+        try {
+            Note createdNote = noteService.createNote(noteDto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdNote);
+        } catch (IllegalArgumentException e) {
+            // Tratar exceção de dados inválidos (por exemplo, DTO malformado)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        } catch (Exception e) {
+            // Tratar outras exceções genéricas
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
-    /**
-     * Buscar notas por conteúdo.
-     *
-     * @param content Texto para pesquisa.
-     * @param authentication Dados do usuário autenticado.
-     * @return Lista de notas contendo o texto.
-     */
-    @GetMapping("/search")
-    @Operation(summary = "Buscar notas", description = "Busca notas que contêm o texto especificado.")
-    public List<Note> searchNotes(@RequestParam String content, Authentication authentication) {
-        String username = authentication.getName(); // Obtém o nome do usuário logado
-        User user = userRepository.findByUsername(username)
-                                   .orElseThrow(() -> new RuntimeException("User not found"));
-        return noteRepository.findByUserAndContentContaining(user, content);
-    }
-
-    /**
-     * Atualizar uma nota existente.
-     *
-     * @param id ID da nota a ser atualizada.
-     * @param note Dados da nota atualizados.
-     * @param authentication Dados do usuário autenticado.
-     * @return A nota atualizada.
-     */
+    @Operation(summary = "Atualizar uma nota existente", description = "Atualiza uma nota existente associada ao usuário autenticado")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Nota atualizada com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Nota não encontrada")
+    })
+    @Transactional
     @PutMapping("/{id}")
-    @Operation(summary = "Atualizar nota", description = "Atualiza uma nota existente do usuário logado.")
-    public Note updateNote(@PathVariable Long id, @RequestBody Note note, Authentication authentication) {
-        String username = authentication.getName();
-        User user = userRepository.findByUsername(username)
-                                   .orElseThrow(() -> new RuntimeException("User not found"));
-
-        Note existingNote = noteRepository.findById(id)
-                                          .orElseThrow(() -> new RuntimeException("Note not found"));
-
-        // Verifica se a nota pertence ao usuário logado
-        if (!existingNote.getUser().equals(user)) {
-            throw new RuntimeException("You do not have permission to update this note");
+    public ResponseEntity<Note> updateNote(@PathVariable Long id, @RequestBody NoteRequestDTO noteDto) {
+        try {
+            Note updatedNote = noteService.updateNote(id, noteDto);
+            return ResponseEntity.ok(updatedNote);
+        } catch (NoteNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();  // Nota não encontrada
+        } catch (PermissionDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();  // Permissão negada
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();  // Erro interno do servidor
         }
-
-        existingNote.setTitle(note.getTitle());
-        existingNote.setContent(note.getContent());
-        existingNote.setUpdatedAt(new Date());
-        return noteRepository.save(existingNote);
     }
 
-    /**
-     * Deletar uma nota existente.
-     *
-     * @param id ID da nota a ser deletada.
-     * @param authentication Dados do usuário autenticado.
-     */
+    @Operation(summary = "Deletar uma nota", description = "Deleta uma nota associada ao usuário autenticado")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Nota deletada com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Nota não encontrada")
+    })
     @DeleteMapping("/{id}")
-    @Operation(summary = "Deletar nota", description = "Deleta uma nota existente do usuário logado.")
-    public void deleteNote(@PathVariable Long id, Authentication authentication) {
-        String username = authentication.getName();
-        User user = userRepository.findByUsername(username)
-                                   .orElseThrow(() -> new RuntimeException("User not found"));
-
-        Note existingNote = noteRepository.findById(id)
-                                          .orElseThrow(() -> new RuntimeException("Note not found"));
-
-        if (!existingNote.getUser().equals(user)) {
-            throw new RuntimeException("You do not have permission to delete this note");
+    public ResponseEntity<Void> deleteNote(@PathVariable Long id) {
+        try {
+            noteService.deleteNote(id);
+            return ResponseEntity.noContent().build();
+        } catch (NoteNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();  // Retorna 404 se não encontrar
+        } catch (DataIntegrityViolationException e) {
+            // Caso a exclusão falhe devido a uma violação de integridade (ex: chave estrangeira)
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();  // Retorna 409
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();  // Retorna 500
         }
-
-        noteRepository.delete(existingNote);
     }
+
+    public class NoteNotFoundException extends RuntimeException {
+        public NoteNotFoundException(String message) {
+            super(message);
+        }
+    }
+    
+
 }
