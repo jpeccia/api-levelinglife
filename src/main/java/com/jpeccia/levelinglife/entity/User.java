@@ -58,12 +58,4 @@ public class User {
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Note> notes;
-    
-    @ManyToMany
-    @JoinTable(
-        name = "user_achievements",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "achievement_id")
-    )
-    private List<Achievement> achievements;
 }
