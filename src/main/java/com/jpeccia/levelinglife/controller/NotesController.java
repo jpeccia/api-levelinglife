@@ -3,7 +3,6 @@ package com.jpeccia.levelinglife.controller;
 import com.jpeccia.levelinglife.dto.NoteRequestDTO;
 import com.jpeccia.levelinglife.dto.NoteResponseDTO;
 import com.jpeccia.levelinglife.entity.Note;
-import com.jpeccia.levelinglife.repository.NoteRepository;
 import com.jpeccia.levelinglife.service.NoteService;
 import com.jpeccia.levelinglife.service.NoteService.PermissionDeniedException;
 
@@ -26,11 +25,6 @@ public class NotesController {
 
     @Autowired
     private NoteService noteService;
-
-    @Autowired
-    private NoteRepository noteRepository;
-
-
 
     @Operation(summary = "Obter todas as notas do usuário", description = "Retorna todas as notas associadas ao usuário autenticado")
     @ApiResponses(value = {

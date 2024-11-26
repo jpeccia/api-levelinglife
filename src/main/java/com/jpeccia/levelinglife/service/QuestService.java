@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.jpeccia.levelinglife.dto.QuestDTO;
 import com.jpeccia.levelinglife.entity.Quest;
@@ -27,11 +28,18 @@ public class QuestService {
     private UserService userService;
 
     // Método que será chamado periodicamente
-    @Scheduled(fixedRate = 60000) // Executa a cada 60 segundos (60000 milissegundos)
+    @Scheduled(fixedRate = 60000) // Executa a cada 60 segundos
+    @Transactional
     public void removeExpiredQuests() {
-        LocalDateTime now = LocalDateTime.now();
-        // Busca e remove as quests expiradas
-        questRepository.deleteAllByExpiresAtBefore(now);
+        try {
+            LocalDateTime now = LocalDateTime.now();
+            // Busca e remove as quests expiradas
+            questRepository.deleteAllByExpiresAtBefore(now);
+        } catch (Exception e) {
+            // Log do erro para depuração
+            System.err.println("Erro ao remover quests expiradas: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     // Calcula o XP necessário para o próximo nível

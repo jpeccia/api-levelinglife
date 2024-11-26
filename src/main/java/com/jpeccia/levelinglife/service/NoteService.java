@@ -1,6 +1,5 @@
 package com.jpeccia.levelinglife.service;
 
-import com.jpeccia.levelinglife.controller.NotesController.NoteNotFoundException;
 import com.jpeccia.levelinglife.dto.NoteRequestDTO;
 import com.jpeccia.levelinglife.dto.NoteResponseDTO;
 import com.jpeccia.levelinglife.entity.Note;
@@ -8,7 +7,6 @@ import com.jpeccia.levelinglife.entity.User;
 import com.jpeccia.levelinglife.repository.NoteRepository;
 import com.jpeccia.levelinglife.repository.UserRepository;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +24,6 @@ public class NoteService {
     private final NoteRepository noteRepository;
     private final UserRepository userRepository;
 
-    @Autowired
     public NoteService(NoteRepository noteRepository, UserRepository userRepository) {
         this.noteRepository = noteRepository;
         this.userRepository = userRepository;
