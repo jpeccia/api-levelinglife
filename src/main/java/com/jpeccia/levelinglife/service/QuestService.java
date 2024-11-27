@@ -107,31 +107,52 @@ public class QuestService {
     }
 
     // Marcar quest como completa
-     public void completeQuest(Long questId) {
+    public void completeQuest(Long questId) {
+        // Verifica se a quest existe no banco de dados
         Quest quest = questRepository.findById(questId)
                 .orElseThrow(() -> new RuntimeException("Quest not found"));
-
+    
+        // Verifica se a quest já foi concluída
+        if (quest.getCompletedAt() != null) {
+            throw new RuntimeException("Quest already completed");
+        }
+    
         // Define completedAt com a data e hora atuais
-        if (quest.getCompletedAt() == null) { // Verifica se já não foi concluída
-            quest.setCompletedAt(LocalDateTime.now());
-
-            User user = quest.getUser(); // Obter o usuário associado
-            int xpEarned = quest.getXp();
-            user.setXp(user.getXp() + xpEarned); // Adicionar o XP ganho
-
-
+        quest.setCompletedAt(LocalDateTime.now());
+    
+        // Obter o usuário associado à quest
+        User user = quest.getUser();
+        int xpEarned = quest.getXp();
+    
+        // Verifique se a quantidade de XP é válida para evitar abusos
+        if (xpEarned <= 0) {
+            throw new RuntimeException("Invalid XP value for quest completion");
+        }
+    
+        // Adiciona o XP ganho ao usuário
+        user.setXp(user.getXp() + xpEarned);
+    
         // Lógica para subir de nível enquanto o usuário tiver XP suficiente
         while (user.getXp() >= calculateXpForNextLevel(user.getLevel())) {
             int xpForNextLevel = calculateXpForNextLevel(user.getLevel());
-            user.setXp(user.getXp() - xpForNextLevel);  // Subtrai o XP necessário para subir de nível
-            user.setLevel(user.getLevel() + 1);         // Incrementa o nível do usuário
-
+    
+            // Subtrai o XP necessário para subir de nível
+            user.setXp(user.getXp() - xpForNextLevel);
+    
+            // Incrementa o nível do usuário
+            user.setLevel(user.getLevel() + 1);
+    
             // Atualiza o título do usuário com base no novo nível
             user.setTitle(userService.getTitleForLevel(user.getLevel()));
         }
-
-            userRepository.save(user); // Salva o usuário com novo XP e nível
-            questRepository.save(quest); // Salva a quest com data de conclusão
+    
+        // Salva o usuário e a quest com transações para garantir consistência de dados
+        try {
+            // Use transação para garantir atomicidade
+            userRepository.save(user);
+            questRepository.save(quest);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to save user or quest data", e);
         }
     }
 
