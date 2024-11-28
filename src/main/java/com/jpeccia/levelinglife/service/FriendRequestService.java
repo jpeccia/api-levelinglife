@@ -4,6 +4,10 @@ import com.jpeccia.levelinglife.entity.FriendRequest;
 import com.jpeccia.levelinglife.entity.User;
 import com.jpeccia.levelinglife.repository.FriendRequestRepository;
 import com.jpeccia.levelinglife.repository.UserRepository;
+
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -64,25 +68,25 @@ public class FriendRequestService {
     return accept ? "Pedido de amizade aceito." : "Pedido de amizade recusado.";
     }
 
+    @Transactional
     public String removeFriend(User user, String friendUsername) {
-        // Encontra o amigo pela ID
-        User friend = userRepository.findByUsername(friendUsername)
-                .orElseThrow(() -> new RuntimeException("Amigo não encontrado"));
-    
-        // Verifica se a amizade existe (entre user e friend)
-        FriendRequest friendship1 = friendRequestRepository.findBySenderAndReceiver(user, friend)
-                .orElseThrow(() -> new RuntimeException("Amizade não encontrada"));
-    
-        // Encontra a amizade bidirecional
-        FriendRequest friendship2 = friendRequestRepository.findBySenderAndReceiver(friend, user)
-                .orElseThrow(() -> new RuntimeException("Amizade não encontrada"));
-    
-        // Remove as amizades do banco de dados
-        friendRequestRepository.delete(friendship1);
-        friendRequestRepository.delete(friendship2);
-    
-        return "Amizade removida com sucesso.";
-    }
+    // Encontra o amigo pelo nome de usuário
+    User friend = userRepository.findByUsername(friendUsername)
+            .orElseThrow(() -> new EntityNotFoundException("Amigo não encontrado"));
+
+    // Verifica se a amizade existe de ambos os lados
+    FriendRequest friendship1 = friendRequestRepository.findBySenderAndReceiver(user, friend)
+            .orElseThrow(() -> new EntityNotFoundException("Amizade não encontrada entre " + user.getUsername() + " e " + friendUsername));
+
+    FriendRequest friendship2 = friendRequestRepository.findBySenderAndReceiver(friend, user)
+            .orElseThrow(() -> new EntityNotFoundException("Amizade não encontrada entre " + friendUsername + " e " + user.getUsername()));
+
+    // Remove ambas as amizades do banco de dados
+    friendRequestRepository.delete(friendship1);
+    friendRequestRepository.delete(friendship2);
+
+    return "Amizade removida com sucesso entre " + user.getUsername() + " e " + friendUsername;
+}
 
     public List<FriendRequest> getPendingFriendRequests(User receiver) {
         return friendRequestRepository.findByReceiverAndStatus(receiver, FriendRequest.Status.PENDING);

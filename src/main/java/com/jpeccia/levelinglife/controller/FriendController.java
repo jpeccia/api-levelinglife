@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,6 +24,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.persistence.EntityNotFoundException;
 
 @RestController
 @RequestMapping("/friends")
@@ -103,8 +105,16 @@ public class FriendController {
     })
     @DeleteMapping("/remove/{friendUsername}")
     public ResponseEntity<String> removeFriend(@PathVariable String friendUsername) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String result = friendRequestService.removeFriend(user, friendUsername);
-        return ResponseEntity.ok(result);
+        try {
+            User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String result = friendRequestService.removeFriend(user, friendUsername);
+            return ResponseEntity.ok(result);
+        } catch (EntityNotFoundException e) {
+            // Amigo ou amizade não encontrada
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (RuntimeException e) {
+            // Outras exceções genéricas ou problemas inesperados
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao remover a amizade: " + e.getMessage());
+        }
     }
 }
