@@ -7,6 +7,33 @@ services:
     ports:
       - 5432:5432
     environment:
-      - POSTGRES_USER=${DB_USERNAME}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=levelinglife
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: levelinglife
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - levelinglife_network
+
+  backend:
+    container_name: levelinglife_backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/levelinglife
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    depends_on:
+      - postgres
+    networks:
+      - levelinglife_network
+
+volumes:
+  postgres_data:
+
+networks:
+  levelinglife_network:
