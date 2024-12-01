@@ -1,5 +1,5 @@
 # Etapa de build
-FROM maven:3.8.8-openjdk-17-slim AS build
+FROM maven:3.8-openjdk-17-slim AS build
 WORKDIR /app
 COPY . .
 RUN mvn clean install -DskipTests
