@@ -47,7 +47,7 @@
 
 2. **Clonando o repositório**:
    ```bash
-   git clone https://github.com/seu-usuario/api-levelinglife.git
+   git clone https://github.com/jpeccia/api-levelinglife.git
    cd levelinglife
    ```
 
